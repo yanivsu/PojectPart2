@@ -8,13 +8,12 @@ from scipy.ndimage.filters import gaussian_filter
 def Main():
      HeatMapFunction()
      PointDrawing()
-     SpeedUpEyes()
+    # SpeedUpEyes()
 
 # MyPlot function helps to maps all the point into gaussian numbers
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
     heatmap = gaussian_filter(heatmap, sigma=s)
-
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
 def PointDrawing():
@@ -26,9 +25,10 @@ def PointDrawing():
         tempLine = line.split()
         xCor.append(float(tempLine[0]))
         yCor.append(float(tempLine[1]))
-    xCor.append(float(2006))
-    yCor.append(float(890))
+    #  xCor.append(float(2006))
+    #  yCor.append(float(890))
     ax = plt.axes()
+    ax.set(xlim=(0, 2500), ylim=(0, 960))
     ax.plot(xCor, yCor, 'bo-')
     plt.show()
     return
@@ -47,7 +47,7 @@ def HeatMapFunction():
 
     fig, axs = plt.subplots(1, 1)
     img, extent = myplot(xCor, yCor, 64)
-    axs.imshow(img, extent=extent, cmap=cm.jet) # Extent => ratio 16:9 cmap.jet => Looks like really heat map
+    axs.imshow(img, extent=extent, cmap=cm.jet)  # Extent => ratio 16:9 cmap.jet => Looks like really heat map
     axs.set_title("Heat Map")
     plt.show()
     return
@@ -55,21 +55,30 @@ def SpeedUpEyes():
     f = open("305082950Middle20SEC.txt", "r")
     xCor = []
     yCor = []
+    timeToGetPoints = 0
+    pointsCount = 0
+    deltaTimePerPoint = 0
     # Collect Points from textFile
     for line in f:
         tempLine = line.split()
-        xCor.append(float(tempLine[0]))
-        yCor.append(float(tempLine[1]))
+        if (len(tempLine) > 2):
+            timeToGetPoints = (float(tempLine[0]))
+            deltaTimePerPoint = (float(tempLine[1]))
+            pointsCount = (float(tempLine[2]))
+        else:
+            xCor.append(float(tempLine[0]))
+            yCor.append(float(tempLine[1]))
     #Calcuate Distance
     distanceArray = []
     for i in range(len(xCor) - 1):
         firstPoint = [xCor[i], yCor[i]]
         secondPoint = [xCor[i+1], yCor[i+1]]
-        tempDistacne = math.sqrt(math.pow((firstPoint[0] - secondPoint[0]), 2) + math.pow((firstPoint[1] - secondPoint[1]), 2));
+        tempDistacne = math.sqrt(math.pow((firstPoint[0] - secondPoint[0]), 2) + math.pow((firstPoint[1] - secondPoint[1]), 2))
+        if (pointsCount <= 0) :
+            break
         distanceArray.append(tempDistacne)
     # Data for plotting
-    t = np.arange(0.0, 20.0, 0.02)
-    distanceArray = distanceArray[0:1000]
+    t = np.arange(0.0, timeToGetPoints, deltaTimePerPoint)
     print(len(t))
     print(len(distanceArray))
     fig, ax = plt.subplots()
@@ -79,6 +88,4 @@ def SpeedUpEyes():
     #       title='About as simple as it gets, folks')
     # ax.grid()
     plt.show()
-
-
 Main()
