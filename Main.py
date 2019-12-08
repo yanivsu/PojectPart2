@@ -95,20 +95,21 @@ def CreateCardBoard():
     imagelist = listdir(path)  # get list of all images
     pdf = FPDF('P', 'mm', 'A4')  # create an A4-size pdf document
     pdf.add_page()
-    x, y, w, h = 25, 0, 20, 30
+    x, y, w, h = 0, 42.6, 43.6, 27.7
     i = 0
     for image in imagelist:
-        if (x == 100):
-            x = 50
-            y = y + 30
+        if (x == 131.39999999999998):
+            x = 43.8
+            y = y + 27.9
         else:
-            x = x + 25
+            x = x + 43.8
         print(i)
+        print(x)
         pdf.image(path + image, x, y, w, h)
+        # The if condition should be removed soon
         if(i < 12):
             i = i + 1
         if(i == 12):
             break
     pdf.output("images.pdf", "F")
-
 Main()
