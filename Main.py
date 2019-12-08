@@ -1,14 +1,18 @@
 import numpy as np
 import math
+from fpdf import FPDF
+from PIL import Image
+from os import listdir
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from scipy.ndimage.filters import gaussian_filter
 
 
 def Main():
-     HeatMapFunction()
-     PointDrawing()
+    # HeatMapFunction()
+    # PointDrawing()
     # SpeedUpEyes()
+     CreateCardBoard()
 
 # MyPlot function helps to maps all the point into gaussian numbers
 def myplot(x, y, s, bins=1000):
@@ -79,8 +83,6 @@ def SpeedUpEyes():
         distanceArray.append(tempDistacne)
     # Data for plotting
     t = np.arange(0.0, timeToGetPoints, deltaTimePerPoint)
-    print(len(t))
-    print(len(distanceArray))
     fig, ax = plt.subplots()
     plt.plot(t, distanceArray, linestyle='solid')
     # ax.plot(t, s)
@@ -88,4 +90,25 @@ def SpeedUpEyes():
     #       title='About as simple as it gets, folks')
     # ax.grid()
     plt.show()
+def CreateCardBoard():
+    path = '/Users/yanivsuriyano/PycharmProjects/PojectPart2/allcards/'  # get the path of images
+    imagelist = listdir(path)  # get list of all images
+    pdf = FPDF('P', 'mm', 'A4')  # create an A4-size pdf document
+    pdf.add_page()
+    x, y, w, h = 25, 0, 20, 30
+    i = 0
+    for image in imagelist:
+        if (x == 100):
+            x = 50
+            y = y + 30
+        else:
+            x = x + 25
+        print(i)
+        pdf.image(path + image, x, y, w, h)
+        if(i < 12):
+            i = i + 1
+        if(i == 12):
+            break
+    pdf.output("images.pdf", "F")
+
 Main()
