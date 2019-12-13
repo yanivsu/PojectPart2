@@ -1,19 +1,24 @@
 import numpy as np
 import math
 from fpdf import FPDF
-from PIL import Image
+import seaborn as sns
 from os import listdir
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+from pdf2image import convert_from_path, convert_from_bytes
+import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
+import mongoDB as db
 
 
 def Main():
+    print()
+    # print(db.GetNumberOfRoundByUsername('mnb'))
+    # print('Please enter your userName')
     # HeatMapFunction()
     # PointDrawing()
     # SpeedUpEyes()
-     CreateCardBoard()
-
+    CreateCardBoard(db.GetBoard('mnb', 232))
+    # PDF2Image()
 # MyPlot function helps to maps all the point into gaussian numbers
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
@@ -37,7 +42,7 @@ def PointDrawing():
     plt.show()
     return
 def HeatMapFunction():
-    f = open("305082950Middle20SEC.txt", "r")
+    f = open("305082950left.txt", "r")
     xCor = []
     yCor = []
     # Collect Points from textFile
@@ -46,15 +51,16 @@ def HeatMapFunction():
         xCor.append(float(tempLine[0]))
         yCor.append(float(tempLine[1]))
     # Add x Point and y Point
-    xCor.append(float(2006))
-    yCor.append(float(890))
-
-    fig, axs = plt.subplots(1, 1)
-    img, extent = myplot(xCor, yCor, 64)
-    axs.imshow(img, extent=extent, cmap=cm.jet)  # Extent => ratio 16:9 cmap.jet => Looks like really heat map
-    axs.set_title("Heat Map")
+    # xCor.append(float(2006))
+    # yCor.append(float(890))
+    plt.subplots(figsize=(12, 12))
+    map_img = mpimg.imread('out.jpg')
+    hmax = sns.kdeplot(xCor, yCor, cmap="Reds", shade=True, bw=.15)
+    hmax.collections[0].set_alpha(0)
+    plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
+    #  Export File to PDF
+    plt2PDF(plt)
     plt.show()
-    return
 def SpeedUpEyes():
     f = open("305082950Middle20SEC.txt", "r")
     xCor = []
@@ -80,7 +86,7 @@ def SpeedUpEyes():
         tempDistacne = math.sqrt(math.pow((firstPoint[0] - secondPoint[0]), 2) + math.pow((firstPoint[1] - secondPoint[1]), 2))
         if (pointsCount <= 0) :
             break
-        distanceArray.append(tempDistacne)
+    distanceArray.append(tempDistacne)
     # Data for plotting
     t = np.arange(0.0, timeToGetPoints, deltaTimePerPoint)
     fig, ax = plt.subplots()
@@ -90,26 +96,33 @@ def SpeedUpEyes():
     #       title='About as simple as it gets, folks')
     # ax.grid()
     plt.show()
-def CreateCardBoard():
-    path = '/Users/yanivsuriyano/PycharmProjects/PojectPart2/allcards/'  # get the path of images
-    imagelist = listdir(path)  # get list of all images
-    pdf = FPDF('P', 'mm', 'A4')  # create an A4-size pdf document
+def CreateCardBoard(listOfImage):
+    path = "C:\\Users\\Yaniv\\untitled1\\allcards\\"  # get the path of images
+    imageList = []
+    for i in range(12):
+        imageList.append(listOfImage[str(i)]+'.png')
+    pdf = FPDF('P', 'mm', 'letter')  # create an A4-size pdf document
     pdf.add_page()
     x, y, w, h = 0, 42.6, 43.6, 27.7
     i = 0
-    for image in imagelist:
+    for image in imageList:
         if (x == 131.39999999999998):
             x = 43.8
             y = y + 27.9
         else:
             x = x + 43.8
-        print(i)
-        print(x)
         pdf.image(path + image, x, y, w, h)
-        # The if condition should be removed soon
-        if(i < 12):
-            i = i + 1
-        if(i == 12):
-            break
     pdf.output("images.pdf", "F")
+def PDF2Image():
+    # To user this function u must install Popper and put the path into System Path
+    # You can use https://stackoverflow.com/questions/18381713/how-to-install-poppler-on-windows
+    images = convert_from_path('images.pdf', 500)
+    for page in images:
+        page.save('out.jpg', 'JPEG')
+def plt2PDF(fig):
+    fig.savefig("testPlot.pdf", bbox_inches='tight')
+    return
+def readBoradFromFile(xls):
+    return
+
 Main()
