@@ -2,22 +2,21 @@ import numpy as np
 import math
 from fpdf import FPDF
 import seaborn as sns
-from os import listdir
+from datetime import datetime
 import matplotlib.pyplot as plt
 from pdf2image import convert_from_path, convert_from_bytes
 import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
 
-
 def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
-    # HeatMapFunction()
+    HeatMapFunction()
     # PointDrawing()
     # SpeedUpEyes()
-    CreateCardBoard(db.GetBoard('mnb', 232))
+    # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
 # MyPlot function helps to maps all the point into gaussian numbers
 def myplot(x, y, s, bins=1000):
@@ -42,11 +41,28 @@ def PointDrawing():
     plt.show()
     return
 def HeatMapFunction():
-    f = open("305082950left.txt", "r")
+    #  Connect to DB and create a Board
+    listOfCardByRound = db.GetBoard('Yaniv', 40)
+    CreateCardBoard(listOfCardByRound)
+    PDF2Image()
+    timeDeatilsRound = db.GetTimeDeatilsPerRound('Yaniv', 40)
+    #  'Yaniv' Should replace to username
+    strFile = 'Yaniv'
+    strFile += timeDeatilsRound[0].strftime('%d%m%Y')
+    strFile += '.txt'
+    f = open(strFile, "r")
     xCor = []
     yCor = []
+    #  Jump the first Line
+    f = f.readlines()[2:]
+    i = 0
+    #  Line to read
+    maxLineToRead = (math.ceil(timeDeatilsRound[1]) * 50)
     # Collect Points from textFile
     for line in f:
+        if i == maxLineToRead:
+            break
+        i += 1
         tempLine = line.split()
         xCor.append(float(tempLine[0]))
         yCor.append(float(tempLine[1]))
@@ -97,32 +113,31 @@ def SpeedUpEyes():
     # ax.grid()
     plt.show()
 def CreateCardBoard(listOfImage):
+    print('The board creation is in process...')
     path = "C:\\Users\\Yaniv\\untitled1\\allcards\\"  # get the path of images
     imageList = []
     for i in range(12):
         imageList.append(listOfImage[str(i)]+'.png')
-    pdf = FPDF('P', 'mm', 'letter')  # create an A4-size pdf document
+    pdf = FPDF('L', 'mm', 'A4')  # create an A4-size pdf document
     pdf.add_page()
-    x, y, w, h = 0, 42.6, 43.6, 27.7
+    x, y, w, h = 0, 52.07, 47.6, 25.7
     i = 0
     for image in imageList:
-        if (x == 131.39999999999998):
-            x = 43.8
-            y = y + 27.9
+        if (x == 191.39999999999998):
+            x = 63.8
+            y = y + 25.9
         else:
-            x = x + 43.8
+            x = x + 63.8
         pdf.image(path + image, x, y, w, h)
-    pdf.output("images.pdf", "F")
+    pdf.output("tempCardBoard.pdf", "F")
+    print('The board creation is in finished ...')
 def PDF2Image():
     # To user this function u must install Popper and put the path into System Path
     # You can use https://stackoverflow.com/questions/18381713/how-to-install-poppler-on-windows
-    images = convert_from_path('images.pdf', 500)
+    images = convert_from_path('tempCardBoard.pdf', 500)
     for page in images:
         page.save('out.jpg', 'JPEG')
 def plt2PDF(fig):
     fig.savefig("testPlot.pdf", bbox_inches='tight')
     return
-def readBoradFromFile(xls):
-    return
-
 Main()
