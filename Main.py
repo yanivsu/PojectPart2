@@ -13,7 +13,8 @@ def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
-    HeatMapFunction()
+    # HeatMapFunction()
+    db.GetCoordinateByRoundNumber('Yaniv',44)
     # PointDrawing()
     # SpeedUpEyes()
     # CreateCardBoard(db.GetBoard('mnb', 232))
@@ -114,7 +115,7 @@ def SpeedUpEyes():
     plt.show()
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
-    path = "C:\\Users\\Yaniv\\untitled1\\allcards\\"  # get the path of images
+    path = "C:\\Users\\Or Asus\\Documents\\PojectPart2\\allcards\\"  # get the path of images
     imageList = []
     for i in range(12):
         imageList.append(listOfImage[str(i)]+'.png')
