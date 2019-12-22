@@ -65,7 +65,6 @@ def GetDatesAndTimes(username):
             datesAndTimesArray.append(TimestampConvert(document['resultsB'][i]['roundStartTime']))
     datesOnly = GetUserDates(datesAndTimesArray)
     values = GetUsersRoundsPerDate(datesOnly, datesAndTimesArray)
-
 def GetUserDates(datesAndTimesArray):
     dates = []
     i = 1
@@ -130,7 +129,3 @@ def GetCoordinateByRoundNumber(username, roundNumber):
         if (timeTemp > roundEndTime):
             break
     return (xCor, yCor)
-
-
-
-    return
