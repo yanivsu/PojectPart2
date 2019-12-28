@@ -149,24 +149,55 @@ def DominatValue(username, roundNumber):
         shapeElements[int(cardsList[card][0])] += 1
     for i in range(3):
         if (numberElements[i] > 4):
-            dominantFlag = 0
+            dominantFlag = 3
             numberInArray = i
             dominantArray[0] += 1
         if (colorElements[i] > 4):
-            dominantFlag = 1
+            dominantFlag = 2
+            numberInArray = i
             dominantArray[1] += 1
         if (fillElements[i] > 4):
-            dominantFlag = 2
+            dominantFlag = 1
+            numberInArray = i
             dominantArray[1] += 1
         if (shapeElements[i] > 4):
-            dominantFlag = 3
+            dominantFlag = 0
+            numberInArray = i
             dominantArray[1] += 1
     if (dominantFlag > -1):
-        if(dominantFlag == 0):
-            print('The most comment value is array is number: ', numberInArray+1)
+        if(dominantFlag == 3):
+            print('The most common value is array is Number: ', numberInArray + 1)
+        if (dominantFlag == 2):
+            print('The most common value is array is Color: ')
+            if(numberInArray == 0):
+                print('Red')
+            if(numberInArray == 1):
+                print('Green')
+            if(numberInArray == 2):
+                print('Purple')
+        if (dominantFlag == 1):
+            print('The most common value is array is Fill: ')
+            if(numberInArray == 0):
+                print('Empty')
+            if(numberInArray == 1):
+                print('Full fill')
+            if(numberInArray == 2):
+                print('Strips')
+        if (dominantFlag == 0):
+            print('The most common value is array is Shape: ')
+            if(numberInArray == 0):
+                print('Diamond')
+            if(numberInArray == 1):
+                print('Circle')
+            if(numberInArray == 2):
+                print('Wave')
+    else:
+        print('There is no dominant value')
+    GetdominantCardArray(dominantArray, cardsList, numberInArray, dominantFlag)
+def GetdominantCardArray(dominantArray, cardsList, numberInArray, dominatFlag):
+    dominantCardArray = []
+    for card in cardsList:
+        if(int(cardsList[card][dominatFlag]) == numberInArray):
+            dominantCardArray.append(cardsList[card])
+    print(dominantCardArray)
 
-
-
-
-
-    print(dominantArray)

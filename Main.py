@@ -13,7 +13,7 @@ def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
-    db.DominatValue('Yaniv', 30)
+    db.DominatValue('Yaniv', 21)
     HeatMapFunction()
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing()
@@ -44,10 +44,10 @@ def PointDrawing():
     return
 def HeatMapFunction():
     #  Connect to DB and create a Board
-    listOfCardByRound = db.GetBoard('Yaniv', 30)
+    listOfCardByRound = db.GetBoard('Yaniv', 21)
     CreateCardBoard(listOfCardByRound)
     PDF2Image()
-    listOfCoodinate = db.GetCoordinateByRoundNumber('Yaniv', 30)
+    listOfCoodinate = db.GetCoordinateByRoundNumber('Yaniv', 21)
     #  'Yaniv' Should replace to username
     xCor = []
     yCor = []
