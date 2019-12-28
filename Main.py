@@ -13,8 +13,9 @@ def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
-    # HeatMapFunction()
-    db.GetCoordinateByRoundNumber('Yaniv',44)
+    db.DominatValue('Yaniv', 30)
+    HeatMapFunction()
+    # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing()
     # SpeedUpEyes()
     # CreateCardBoard(db.GetBoard('mnb', 232))
@@ -43,36 +44,22 @@ def PointDrawing():
     return
 def HeatMapFunction():
     #  Connect to DB and create a Board
-    listOfCardByRound = db.GetBoard('Yaniv', 40)
+    listOfCardByRound = db.GetBoard('Yaniv', 30)
     CreateCardBoard(listOfCardByRound)
     PDF2Image()
-    timeDeatilsRound = db.GetTimeDeatilsPerRound('Yaniv', 40)
+    listOfCoodinate = db.GetCoordinateByRoundNumber('Yaniv', 30)
     #  'Yaniv' Should replace to username
-    strFile = 'Yaniv'
-    strFile += timeDeatilsRound[0].strftime('%d%m%Y')
-    strFile += '.txt'
-    f = open(strFile, "r")
     xCor = []
     yCor = []
-    #  Jump the first Line
-    f = f.readlines()[2:]
-    i = 0
-    #  Line to read
-    maxLineToRead = (math.ceil(timeDeatilsRound[1]) * 50)
-    # Collect Points from textFile
-    for line in f:
-        if i == maxLineToRead:
-            break
-        i += 1
-        tempLine = line.split()
-        xCor.append(float(tempLine[0]))
-        yCor.append(float(tempLine[1]))
-    # Add x Point and y Point
-    # xCor.append(float(2006))
-    # yCor.append(float(890))
+    #  Convert String point to float point
+    for x in listOfCoodinate[0]:
+        xCor.append(float(x))
+    for y in listOfCoodinate[1]:
+        yCor.append(float(y))
     plt.subplots(figsize=(12, 12))
+    print(xCor, yCor)
     map_img = mpimg.imread('out.jpg')
-    hmax = sns.kdeplot(xCor, yCor, cmap="Reds", shade=True, bw=.15)
+    hmax = sns.kdeplot(xCor, yCor, cmap="Blues", shade=True)
     hmax.collections[0].set_alpha(0)
     plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
     #  Export File to PDF
@@ -115,7 +102,7 @@ def SpeedUpEyes():
     plt.show()
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
-    path = "C:\\Users\\Or Asus\\Documents\\PojectPart2\\allcards\\"  # get the path of images
+    path = "C:\\Users\\Yaniv\\untitled1\\allcards\\"  # get the path of images
     imageList = []
     for i in range(12):
         imageList.append(listOfImage[str(i)]+'.png')

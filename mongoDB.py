@@ -2,7 +2,6 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 from datetime import timedelta
-
 #  Connect to DB
 client = MongoClient('mongodb://admin:matanman@ds031822.mongolab.com:31822/admin?authSource=setstudy')
 
@@ -129,3 +128,45 @@ def GetCoordinateByRoundNumber(username, roundNumber):
         if (timeTemp > roundEndTime):
             break
     return (xCor, yCor)
+def DominatValue(username, roundNumber):
+    #  [3] => Number of elements
+    #  [2] => Color of elements
+    #  [1] => Fill of elements
+    #  [0] => Shape of elements
+    #  Example of roundID = 5d66bc413ace1114004b0731
+    numberElements = [0, 0, 0]  # [0] => 1 element , [1] => 2 elements , [2] => 3 elements
+    colorElements = [0, 0, 0]   # [0] => Red , [1] => Green , [2] => Purple
+    fillElements  = [0, 0, 0]   # [0] => Empty, [1] => Full fill , [2] => Strips
+    shapeElements = [0, 0, 0]   # [0] => Diamond , [1] => Circle , [2] => Wave
+    dominantArray = [0, 0, 0, 0]
+    dominantFlag = -1
+    numberInArray = 0
+    cardsList = GetBoard(username=username, roundNumber=roundNumber)
+    for card in cardsList:
+        numberElements[int(cardsList[card][3])] += 1
+        colorElements[int(cardsList[card][2])] += 1
+        fillElements[int(cardsList[card][1])] += 1
+        shapeElements[int(cardsList[card][0])] += 1
+    for i in range(3):
+        if (numberElements[i] > 4):
+            dominantFlag = 0
+            numberInArray = i
+            dominantArray[0] += 1
+        if (colorElements[i] > 4):
+            dominantFlag = 1
+            dominantArray[1] += 1
+        if (fillElements[i] > 4):
+            dominantFlag = 2
+            dominantArray[1] += 1
+        if (shapeElements[i] > 4):
+            dominantFlag = 3
+            dominantArray[1] += 1
+    if (dominantFlag > -1):
+        if(dominantFlag == 0):
+            print('The most comment value is array is number: ', numberInArray+1)
+
+
+
+
+
+    print(dominantArray)
