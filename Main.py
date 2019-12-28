@@ -8,8 +8,6 @@ from pdf2image import convert_from_path, convert_from_bytes
 import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
-from PIL import ImageFilter
-
 def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
@@ -103,7 +101,7 @@ def SpeedUpEyes():
     plt.show()
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
-    path = "C:\\Users\\Yaniv\\untitled1\\allcards\\"  # get the path of images
+    path = 'allcards/'  # get the path of images
     imageList = []
     for i in range(12):
         imageList.append(listOfImage[str(i)]+'.png')
