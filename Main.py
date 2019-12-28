@@ -8,6 +8,7 @@ from pdf2image import convert_from_path, convert_from_bytes
 import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
+from PIL import ImageFilter
 
 def Main():
     print()
