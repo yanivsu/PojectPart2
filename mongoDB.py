@@ -114,7 +114,12 @@ def GetCoordinateByRoundNumber(username, roundNumber):
     strFile = username
     strFile += dataPerRound[0].date().strftime("%d%m%y")
     strFile += '.txt'
-    f = open(strFile, "r")
+    try:
+        f = open(strFile, "r")
+        print('Tobii file load successfully')
+    except:
+        print("File dont exist in DB please check you DB")
+        return
     #  Jump the first Line
     f = f.readlines()[2:]
     i = 0

@@ -12,10 +12,10 @@ def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
-    db.DominatValue('Yaniv', 21)
-    HeatMapFunction()
+    # db.DominatValue('Yaniv', 21)
+    # HeatMapFunction()
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
-    # PointDrawing()
+    PointDrawing()
     # SpeedUpEyes()
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
@@ -26,27 +26,27 @@ def myplot(x, y, s, bins=1000):
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
 def PointDrawing():
-    f = open("305082950Middle20SEC.txt", "r")
-    xCor = []
-    yCor = []
-    # Collect Points from textFile
-    for line in f:
-        tempLine = line.split()
-        xCor.append(float(tempLine[0]))
-        yCor.append(float(tempLine[1]))
-    #  xCor.append(float(2006))
-    #  yCor.append(float(890))
-    ax = plt.axes()
-    ax.set(xlim=(0, 2500), ylim=(0, 960))
-    ax.plot(xCor, yCor, 'bo-')
-    plt.show()
-    return
-def HeatMapFunction():
-    #  Connect to DB and create a Board
-    listOfCardByRound = db.GetBoard('Yaniv', 21)
+    listOfCardByRound = db.GetBoard('Gulkin', 3)
     CreateCardBoard(listOfCardByRound)
     PDF2Image()
-    listOfCoodinate = db.GetCoordinateByRoundNumber('Yaniv', 21)
+    listOfCoodinate = db.GetCoordinateByRoundNumber('Gulkin', 3)
+    xCor = []
+    yCor = []
+    for x in listOfCoodinate[0]:
+        xCor.append(float(x))
+    for y in listOfCoodinate[1]:
+        yCor.append(float(y))
+    plt.plot(xCor, yCor, 'bo-')
+    map_img = mpimg.imread('out.jpg')
+    plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
+    plt2PDF(plt)
+    plt.show()
+def HeatMapFunction():
+    #  Connect to DB and create a Board
+    listOfCardByRound = db.GetBoard('Gulkin', 3)
+    CreateCardBoard(listOfCardByRound)
+    PDF2Image()
+    listOfCoodinate = db.GetCoordinateByRoundNumber('Gulkin', 3)
     #  'Yaniv' Should replace to username
     xCor = []
     yCor = []
@@ -56,9 +56,8 @@ def HeatMapFunction():
     for y in listOfCoodinate[1]:
         yCor.append(float(y))
     plt.subplots(figsize=(12, 12))
-    print(xCor, yCor)
     map_img = mpimg.imread('out.jpg')
-    hmax = sns.kdeplot(xCor, yCor, cmap="Blues", shade=True)
+    hmax = sns.kdeplot(xCor, yCor, cmap="Blues", shade=False)
     hmax.collections[0].set_alpha(0)
     plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
     #  Export File to PDF
