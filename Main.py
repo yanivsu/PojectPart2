@@ -8,7 +8,10 @@ from pdf2image import convert_from_path, convert_from_bytes
 import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
+import webbrowser
+
 def Main():
+    print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
     # db.DominatValue('Yaniv', 21)
@@ -18,7 +21,7 @@ def Main():
     # SpeedUpEyes()
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
-    CreateDominantCardBoard()
+    # CreateDominantCardBoard()
 # MyPlot function helps to maps all the point into gaussian numbers
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
@@ -41,13 +44,17 @@ def PointDrawing():
     plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
     plt2PDF(plt)
     plt.show()
-def HeatMapFunction():
+def HeatMapFunction(username,roundNumber,dominateFlag):
     #  Connect to DB and create a Board
-    listOfCardByRound = db.GetBoard('Gulkin', 3)
-    CreateCardBoard(listOfCardByRound)
+
+    if(dominateFlag==0):
+     listOfCardByRound = db.GetBoard(username, int(roundNumber))
+     CreateCardBoard(listOfCardByRound)
+    if(dominateFlag==1):
+     listOfCardByRound = db.DominatValue(username, int(roundNumber))
+     CreateDominantCardBoard(listOfCardByRound)
     PDF2Image()
-    listOfCoodinate = db.GetCoordinateByRoundNumber('Gulkin', 3)
-    #  'Yaniv' Should replace to username
+    listOfCoodinate = db.GetCoordinateByRoundNumber(username, int(roundNumber))
     xCor = []
     yCor = []
     #  Convert String point to float point
@@ -62,10 +69,10 @@ def HeatMapFunction():
     plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
     #  Export File to PDF
     plt2PDF(plt)
+    webbrowser.open_new(r'testPlot.pdf')
     plt.show()
 def SpeedUpEyes():
     listOfCoodinate = db.GetCoordinateByRoundNumber('Gulkin', 1)
-    #  'Yaniv' Should replace to username
     xCor = []
     yCor = []
     #  Convert String point to float point
@@ -116,13 +123,12 @@ def CreateCardBoard(listOfImage):
         pdf.image(path + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The board creation is in finished ...')
-def CreateDominantCardBoard():
+def CreateDominantCardBoard(listOfCardByRound):
     #  The GaussianBlur() uses the Gaussian kernel.
     #  The height and width of the kernel should be a positive and an odd number.
     #  Then you have to specify the X and Y direction that is sigmaX and sigmaY respectively.
     #  If only one is specified, both are considered the same.
     creationFlag = False
-    listOfCardByRound = db.DominatValue('Gulkin', 3)
     if listOfCardByRound == False:
         print('Sorry the round has no dominant value')
         return False

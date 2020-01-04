@@ -1,5 +1,9 @@
+from tkinter.ttk import Combobox
 from pymongo import MongoClient
 from tkinter import *
+import mongoDB as db
+import Main as graph
+
 
 def createLoginFrame(prevFrame,currentFrame):
     forgetFrame=currentFrame
@@ -51,34 +55,86 @@ def GetUserID(textBox,loginFrame):
         print("the user type is: "+userType)
         WelcomePage(userType,prevFrame)
 
+
+def getSelectedGraph(graphSelection,username,userRound,dominateFlag):
+    if(graphSelection=="Heat map"):
+        graph.HeatMapFunction(username,userRound,dominateFlag)
+    #if (graphSelection == "Eye movment speed"):
+    #if (graphSelection == "Point drawing"):
+
+def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
+    username = texbox.get("1.0", "end-1c")
+    print("the reqursted id is: " + username)
+    getIDButton.pack_forget()
+    numberOfRounds = db.GetNumberOfRoundByUsername(username)
+    numberOfRoundArray = []
+    for i in range(numberOfRounds):
+        numberOfRoundArray.append(i)
+    #spaceLabel = Label(currentFrame, text="").pack()
+    roundsLabel = Label(currentFrame, text=username+" rounds").pack()
+    var =IntVar()
+    roundsComboBox = Combobox(currentFrame, values = numberOfRoundArray)
+    roundsComboBox.pack()
+    spaceLabel = Label(currentFrame, text="").pack()
+    graphSelectionLabel = Label(currentFrame, text="Choose your graph type").pack()
+    graphSelectionComboBox = Combobox(currentFrame,
+                                      values = ["Heat map","Eye movment speed","Point drawing"])
+    graphSelectionComboBox.pack()
+    spaceLabel = Label(currentFrame, text="").pack()
+    checkBoxButton=Checkbutton(currentFrame,text="Show only dominate cards",variable=var)
+    checkBoxButton.pack()
+    spaceLabel = Label(currentFrame, text="").pack()
+
+    next=Button(currentFrame,text="Get graph",
+                command=lambda:getSelectedGraph(graphSelectionComboBox.get(),username,roundsComboBox.get(),var.get())).pack()
+
 def createAdminsFrame(userType,prevFrame):
     welcomeAdminFrame = Frame(loginScrren)
     currentFrame = welcomeAdminFrame
     welcomeAdminFrame.pack()
-    labelUserID = Label(welcomeAdminFrame, bg="green", fg="White", text="HI " + userType).pack()
+    labelUserID = Label(welcomeAdminFrame, text="Enter requested id: " + userType).pack()
     spaceLabel = Label(welcomeAdminFrame, text="").pack()
     texbox = Text(welcomeAdminFrame, height=2, width=11).pack()
     spaceLabel = Label(text="")
     signOutButton = Button(welcomeAdminFrame, height=1, width=10, text="Sign-out",
                            command=lambda: createLoginFrame(prevFrame,currentFrame)).pack()
 
+def CreateViewFrame(prevFrame):
+    forgetFrame=prevFrame
+    forgetFrame.forget()
+    viewFrame=Frame(loginScrren).pack()
+    currentFrame=viewFrame
+    labelUserID = Label(viewFrame, bg="green", fg="White", text="HI ").pack()
+    spaceLabelgert = Label(viewFrame, text="").pack()
+    texbox = Text(viewFrame, height=2, width=11)
+    texbox.pack()
+    spaceLabel = Label(text="").pack()
+    getIDButton = Button(viewFrame, height=1, width=10, text="GET DETAIELS",
+                         command=lambda: GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton))
+    getIDButton.pack()
+    spaceLabel = Label(text="").pack()
+    #signOutButton = Button(viewFrame, height=1, width=10, text="Sign-out",).pack()
+
 def createLecturerFrame(userType,prevFrame):
     welcomeLecturerFrame = Frame(loginScrren)
     currentFrame = welcomeLecturerFrame
     welcomeLecturerFrame.pack()
-    labelUserID = Label(welcomeLecturerFrame, bg="blue", fg="White", text="HI " + userType).pack()
+    labelUserID = Label(welcomeLecturerFrame, bg="blue", fg="White",
+                         text="HI " + userType).pack()
     spaceLabel = Label(welcomeLecturerFrame, text="").pack()
     # texbox = Text(welcomeLecturerFrame, height=2, width=11).pack()
-
     #  spaceLabel = Label(text="").pack()
-    createButton = Button(welcomeLecturerFrame, height=1, width=20, text="Create Test").pack()
-
+    createButton = Button(welcomeLecturerFrame, height=1, width=20,
+                          text="Create Test").pack()
     # spaceLabel = Label(text="").pack()
-    viewButton = Button(welcomeLecturerFrame, height=1, width=20, text="View test results").pack()
-
+    viewButton = Button(welcomeLecturerFrame, height=1, width=20,
+                          text="View test results",
+                          command=lambda: CreateViewFrame(currentFrame)).pack()
     # spaceLabel = Label(text="").pack()
-    requestButton = Button(welcomeLecturerFrame, height=1, width=20, text="Send request for report").pack()
-    signOutButton = Button(welcomeLecturerFrame, height=1, width=10, text="Sign-out",
+    requestButton = Button(welcomeLecturerFrame, height=1, width=20,
+                           text="Send request for report").pack()
+    signOutButton = Button(welcomeLecturerFrame, height=1, width=10,
+                           text="Sign-out",
                            command=lambda: createLoginFrame(prevFrame,currentFrame)).pack()
 
 def createStudentsFrame(userType,prevFrame):
@@ -87,7 +143,7 @@ def createStudentsFrame(userType,prevFrame):
     welcomeStudentFrame.pack()
     labelUserID = Label(welcomeStudentFrame, bg="grey", fg="White", text="HI " + userType).pack()
     spaceLabel = Label(welcomeStudentFrame, text="").pack()
-    # texbox = Text(welcomeStudentFrame, height=2, width=11).pack()
+    texbox = Text(welcomeStudentFrame, height=2, width=11).pack()
     spaceLabel = Label(welcomeStudentFrame,text="").pack()
     startTestButton = Button(welcomeStudentFrame, height=1, width=10, text="Start test",).pack()
     spaceLabel = Label(welcomeStudentFrame,text="").pack()
