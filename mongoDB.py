@@ -198,11 +198,12 @@ def DominatValue(username, roundNumber):
                 print('Wave')
     else:
         print('There is no dominant value')
-    GetdominantCardArray(dominantArray, cardsList, numberInArray, dominantFlag)
+        return False
+    return GetdominantCardArray(dominantArray, cardsList, numberInArray, dominantFlag)
 def GetdominantCardArray(dominantArray, cardsList, numberInArray, dominatFlag):
     dominantCardArray = []
     for card in cardsList:
         if(int(cardsList[card][dominatFlag]) == numberInArray):
             dominantCardArray.append(cardsList[card])
-    print(dominantCardArray)
+    return dominantCardArray
 
