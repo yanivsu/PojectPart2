@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from tkinter import  *
+from tkinter import *
 
 def createLoginFrame(prevFrame,currentFrame):
     forgetFrame=currentFrame
@@ -114,13 +114,13 @@ def StartPage():
 
     loginFrame=Frame(loginScrren)
     loginFrame.pack()
-    labelUserID=Label(loginFrame,text="Enter user ID").pack()
-    spaceLabel=Label(loginFrame,text="").pack()
-    textBox=Text(loginFrame,height=2,width=11)
+    labelUserID=Label(loginFrame, text="Enter user ID").pack()
+    spaceLabel=Label(loginFrame, text="").pack()
+    textBox=Text(loginFrame, height=2, width=11)
     textBox.pack()
-    spaceLabel = Label(loginFrame,text="").pack()
+    spaceLabel = Label(loginFrame, text="").pack()
     nextButton=Button(loginFrame, height=1, width=10, text="Login",
-                      command=lambda: GetUserID(textBox,loginFrame)).pack()
+                      command=lambda: GetUserID(textBox, loginFrame)).pack()
     loginScrren.mainloop()
 
 client = MongoClient('mongodb://admin:matanman@ds031822.mongolab.com:31822/admin?authSource=setstudy')

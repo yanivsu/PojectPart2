@@ -117,19 +117,24 @@ def CreateCardBoard(listOfImage):
     pdf.output("tempCardBoard.pdf", "F")
     print('The board creation is in finished ...')
 def CreateDominantCardBoard():
+    #  The GaussianBlur() uses the Gaussian kernel.
+    #  The height and width of the kernel should be a positive and an odd number.
+    #  Then you have to specify the X and Y direction that is sigmaX and sigmaY respectively.
+    #  If only one is specified, both are considered the same.
+    creationFlag = False
     listOfCardByRound = db.DominatValue('Gulkin', 3)
     if listOfCardByRound == False:
         print('Sorry the round has no dominant value')
         return False
     print('The dominant board creation is in process...')
     path = 'allcards/'  # get the path of images
-    tempPath = 'tenocardboard/'
+    tempPath = 'tempcardboard/'
     imageListHighlight = []
     imageList = []
     #  Get the card list of dominant value from board
     for i in range(listOfCardByRound.__len__()):
         imageListHighlight.append(listOfCardByRound[i]+'.png')
-    #  Get the all board
+    #  Get the all board list
     listOfCardByRound = db.GetBoard('Gulkin', 3)
     for i in range(12):
         imageList.append(listOfCardByRound[str(i)] + '.png')
@@ -137,18 +142,27 @@ def CreateDominantCardBoard():
     for i in range(12):
         for j in range(imageListHighlight.__len__()):
             if imageList[i] == imageListHighlight[j]:
-             img = cv2.imread(tempPath + imageListHighlight[1])
-             blur_image = cv2.GaussianBlur(img, (51, 51), 0)
-             cv2.imwrite(path + imageList[i], blur_image)
-    #  The GaussianBlur() uses the Gaussian kernel.
-    #  The height and width of the kernel should be a positive and an odd number.
-    #  Then you have to specify the X and Y direction that is sigmaX and sigmaY respectively.
-    #  If only one is specified, both are considered the same.
+             img = cv2.imread(path + imageListHighlight[j])
+             cv2.imwrite(tempPath + imageListHighlight[j], img)
+             creationFlag = True
+             break
+        if creationFlag == False:
+            img = cv2.imread(path + imageList[i])
+            blur_image = cv2.GaussianBlur(img, (61, 61), 0)
+            cv2.imwrite(tempPath + imageList[i], blur_image)
+        creationFlag = False
     pdf = FPDF('L', 'mm', 'A4')  # create an A4-size pdf document
     pdf.add_page()
+    x, y, w, h = 0, 52.07, 47.6, 25.7
+    for image in imageList:
+        if (x == 191.39999999999998):
+            x = 63.8
+            y = y + 25.9
+        else:
+            x = x + 63.8
+        pdf.image(tempPath + image, x, y, w, h)
     pdf.output("tempCardHighlightBoard.pdf", "F")
     print('The dominant board creation is in finished ...')
-
 def PDF2Image():
     # To user this function u must install Popper and put the path into System Path
     # You can use https://stackoverflow.com/questions/18381713/how-to-install-poppler-on-windows
