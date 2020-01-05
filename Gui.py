@@ -59,6 +59,7 @@ def GetUserID(textBox,loginFrame):
 def getSelectedGraph(graphSelection,username,userRound,dominateFlag):
     if(graphSelection=="Heat map"):
         graph.HeatMapFunction(username,userRound,dominateFlag)
+
     #if (graphSelection == "Eye movment speed"):
     #if (graphSelection == "Point drawing"):
 
@@ -84,10 +85,10 @@ def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     checkBoxButton=Checkbutton(currentFrame,text="Show only dominate cards",variable=var)
     checkBoxButton.pack()
     spaceLabel = Label(currentFrame, text="").pack()
-
     next=Button(currentFrame,text="Get graph",
-                command=lambda:getSelectedGraph(graphSelectionComboBox.get(),username,roundsComboBox.get(),var.get())).pack()
-
+                command=lambda: getSelectedGraph(
+                graphSelectionComboBox.get(),username,roundsComboBox.get(),var.get()))
+    next.pack()
 def createAdminsFrame(userType,prevFrame):
     welcomeAdminFrame = Frame(loginScrren)
     currentFrame = welcomeAdminFrame

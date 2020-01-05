@@ -46,13 +46,14 @@ def PointDrawing():
     plt.show()
 def HeatMapFunction(username,roundNumber,dominateFlag):
     #  Connect to DB and create a Board
-
     if(dominateFlag==0):
-     listOfCardByRound = db.GetBoard(username, int(roundNumber))
-     CreateCardBoard(listOfCardByRound)
-    if(dominateFlag==1):
-     listOfCardByRound = db.DominatValue(username, int(roundNumber))
-     CreateDominantCardBoard(listOfCardByRound)
+      print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
+      listOfCardByRound = db.GetBoard(username, int(roundNumber))
+      CreateCardBoard(listOfCardByRound)
+    if (dominateFlag == 1):
+      print("DOMINATE BOARD HAS BEEN SELECTED TO BE CREATED")
+      listOfCardByRound = db.DominatValue(username, int(roundNumber))
+      CreateDominantCardBoard(listOfCardByRound)
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(username, int(roundNumber))
     xCor = []
