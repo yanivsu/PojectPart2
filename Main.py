@@ -51,7 +51,7 @@ def HeatMapFunction(username,roundNumber,dominateFlag):
       listOfCardByRound = db.GetBoard(username, int(roundNumber))
       CreateCardBoard(listOfCardByRound)
     if (dominateFlag == 1):
-      print("DOMINATE BOARD HAS BEEN SELECTED TO BE CREATED")
+      print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
       listOfCardByRound = db.DominatValue(username, int(roundNumber))
       CreateDominantCardBoard(listOfCardByRound)
     PDF2Image()

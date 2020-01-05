@@ -1,6 +1,7 @@
 from tkinter.ttk import Combobox
 from pymongo import MongoClient
 from tkinter import *
+from tkinter import messagebox
 import mongoDB as db
 import Main as graph
 
@@ -59,10 +60,23 @@ def GetUserID(textBox,loginFrame):
 def getSelectedGraph(graphSelection,username,userRound,dominateFlag):
     if(graphSelection=="Heat map"):
         graph.HeatMapFunction(username,userRound,dominateFlag)
+    if (graphSelection == "Eye movment speed"):
+        print("NEED TO PUT EYE MOVMENT FUNC")
+        #graph.HeatMapFunction(username, userRound, dominateFlag)
+    if (graphSelection == "Point drawing"):
+        print("NEED TO PUT POIN DRAWING FUNC")
+        #graph.HeatMapFunction(username, userRound, dominateFlag)
 
     #if (graphSelection == "Eye movment speed"):
     #if (graphSelection == "Point drawing"):
 
+def CheckLecturerSelection(graphSelection,roundSelection,username,domFlag):
+    if graphSelection =="":
+        messagebox.showinfo("ERROR", "Please select graph type")
+    if roundSelection =="":
+        messagebox.showinfo("ERROR", "Please select round to present")
+    if(graphSelection!="" and roundSelection!=""):
+        getSelectedGraph(graphSelection, username,roundSelection, domFlag)
 def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     username = texbox.get("1.0", "end-1c")
     print("the reqursted id is: " + username)
@@ -86,8 +100,8 @@ def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     checkBoxButton.pack()
     spaceLabel = Label(currentFrame, text="").pack()
     next=Button(currentFrame,text="Get graph",
-                command=lambda: getSelectedGraph(
-                graphSelectionComboBox.get(),username,roundsComboBox.get(),var.get()))
+                command=lambda: CheckLecturerSelection(
+                graphSelectionComboBox.get(),roundsComboBox.get(),username,var.get()))
     next.pack()
 def createAdminsFrame(userType,prevFrame):
     welcomeAdminFrame = Frame(loginScrren)
