@@ -83,7 +83,7 @@ def SpeedUpEyes(userName,userRound):
         xCor.append(float(x))
     for y in listOfCoodinate[1]:
         yCor.append(float(y))
-    timeOfRound = db.GetTimeDeatilsPerRound(userName,userRound)[1]
+    timeOfRound = db.GetTimeDeatilsPerRound(userName, userRound)[1]
     pointsCount = xCor.__len__()
     deltaTimePerPoint = pointsCount / timeOfRound
     #Calcuate Distance
@@ -182,4 +182,6 @@ def PDF2Image():
 def plt2PDF(fig):
     fig.savefig("testPlot.pdf", bbox_inches='tight')
     return
+def GetAvgSpeedOfSpeedUpEyes(speedOfEyes):
+    return sum(speedOfEyes) / len(speedOfEyes)
 Main()
