@@ -34,24 +34,28 @@ def GetUserID(textBox,loginFrame):
     print("the user name is: "+username)
 
     db = client['setstudy'].get_collection('users').find({'username': username})
+
     if db.count() == 0:
         print('Your username dose not exist')
         return 0
+
     for document in db:
         id=document['_id']
+        flagType=str(document['type'])
+
     print("The user id is: "+str(id))
 
-    if str(id)==("5cf50956e3cb94889e658755"):
+    if flagType=='1':
         userType="Admin"
         print(userType)
         WelcomePage(userType,prevFrame)
 
-    if str(id)==("593462243aa2ad1100b17605"):
+    if flagType=='2':
         userType="Lecturer"
         print(userType)
         WelcomePage(userType,prevFrame)
 
-    if str(id)==("593462243aa2ad1100b17606"):
+    if flagType=='0':
         userType="Student"
         print("the user type is: "+userType)
         WelcomePage(userType,prevFrame)
