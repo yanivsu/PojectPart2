@@ -61,10 +61,10 @@ def getSelectedGraph(graphSelection,username,userRound,dominateFlag):
     if(graphSelection=="Heat map"):
         graph.HeatMapFunction(username,userRound,dominateFlag)
     if (graphSelection == "Eye movment speed"):
-        print("NEED TO PUT EYE MOVMENT FUNC")
+        graph.SpeedUpEyes(username,userRound)
         #graph.HeatMapFunction(username, userRound, dominateFlag)
     if (graphSelection == "Point drawing"):
-        print("NEED TO PUT POIN DRAWING FUNC")
+        graph.PointDrawing(username,userRound)
         #graph.HeatMapFunction(username, userRound, dominateFlag)
 
     #if (graphSelection == "Eye movment speed"):
@@ -182,9 +182,13 @@ def StartPage():
     loginScrren=Tk()
     loginScrren.geometry("300x350")
     loginScrren.title("Login page")
-
+    signOutFram=Frame(loginScrren)
+    signOutFram.pack(side=BOTTOM)
     loginFrame=Frame(loginScrren)
     loginFrame.pack()
+    spaceLabel = Label(loginFrame, text="").pack()
+    spaceLabel = Label(loginFrame, text="").pack()
+    spaceLabel = Label(loginFrame, text="").pack()
     labelUserID=Label(loginFrame, text="Enter user ID").pack()
     spaceLabel=Label(loginFrame, text="").pack()
     textBox=Text(loginFrame, height=2, width=11)

@@ -28,11 +28,12 @@ def myplot(x, y, s, bins=1000):
     heatmap = gaussian_filter(heatmap, sigma=s)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
-def PointDrawing():
-    listOfCardByRound = db.GetBoard('Gulkin', 3)
+def PointDrawing(userName,userRound):
+    print("STARTING TO CREATE POINT DRAWING GRAPH")
+    listOfCardByRound = db.GetBoard(userName, userRound)
     CreateCardBoard(listOfCardByRound)
     PDF2Image()
-    listOfCoodinate = db.GetCoordinateByRoundNumber('Gulkin', 3)
+    listOfCoodinate = db.GetCoordinateByRoundNumber(userName, userRound)
     xCor = []
     yCor = []
     for x in listOfCoodinate[0]:
@@ -72,8 +73,9 @@ def HeatMapFunction(username,roundNumber,dominateFlag):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-def SpeedUpEyes():
-    listOfCoodinate = db.GetCoordinateByRoundNumber('Gulkin', 1)
+def SpeedUpEyes(userName,userRound):
+    print("STARTING TO CREATE SPEED EYE GRAPH")
+    listOfCoodinate = db.GetCoordinateByRoundNumber(userName,userRound)
     xCor = []
     yCor = []
     #  Convert String point to float point
@@ -81,7 +83,7 @@ def SpeedUpEyes():
         xCor.append(float(x))
     for y in listOfCoodinate[1]:
         yCor.append(float(y))
-    timeOfRound = db.GetTimeDeatilsPerRound('Gulkin', 1)[1]
+    timeOfRound = db.GetTimeDeatilsPerRound(userName,userRound)[1]
     pointsCount = xCor.__len__()
     deltaTimePerPoint = pointsCount / timeOfRound
     #Calcuate Distance
@@ -89,7 +91,8 @@ def SpeedUpEyes():
     for i in range(len(xCor) - 1):
         firstPoint = [xCor[i], yCor[i]]
         secondPoint = [xCor[i+1], yCor[i+1]]
-        tempDistacne = math.sqrt(math.pow((firstPoint[0] - secondPoint[0]), 2) + math.pow((firstPoint[1] - secondPoint[1]), 2))
+        tempDistacne = math.sqrt(math.pow((firstPoint[0] - secondPoint[0]), 2) +
+                                 math.pow((firstPoint[1] - secondPoint[1]), 2))
         if (pointsCount <= 0) :
             break
         distanceArray.append(tempDistacne)

@@ -21,7 +21,7 @@ def GetRoundIDByUserName(username, roundNumber):
         print('Your username dose not exist')
         return 0
     for document in db:
-        return document['resultsB'][roundNumber]['round']
+        return document['resultsB'][int(roundNumber)]['round']
 def GetNumberOfRoundByUsername(username):
     if not username:
         print('Your username invalid')
@@ -42,9 +42,9 @@ def GetTimeDeatilsPerRound(username, roundNumber):
         print('Your username dose not exist')
         return 0
     for document in db:
-        roundStartTime = document['resultsB'][roundNumber]['roundStartTime']
-        totalTimeRound = document['resultsB'][roundNumber]['timeToSubmit']
-        success = document['resultsB'][roundNumber]['success']
+        roundStartTime = document['resultsB'][int(roundNumber)]['roundStartTime']
+        totalTimeRound = document['resultsB'][int(roundNumber)]['timeToSubmit']
+        success = document['resultsB'][int(roundNumber)]['success']
     startTimeRound = TimestampConvert(roundStartTime)
     detailsRound.append(startTimeRound)
     detailsRound.append(totalTimeRound)
