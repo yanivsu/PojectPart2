@@ -112,6 +112,7 @@ def GetCoordinateByRoundNumber(username, roundNumber):
     roundEndTime = roundEndTime.time()
     roundStartTime = roundStartTime.time()
     strFile = username
+    strFile += '_'
     strFile += dataPerRound[0].date().strftime("%d%m%y")
     strFile += '.txt'
     try:
