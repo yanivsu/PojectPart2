@@ -124,6 +124,7 @@ def GetCoordinateByRoundNumber(username, roundNumber):
     #  Jump the first Line
     f = f.readlines()[2:]
     i = 0
+    
     for line in f:
         tempLine = line.split()
         timeTemp = tempLine[2]
