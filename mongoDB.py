@@ -112,6 +112,7 @@ def GetCoordinateByRoundNumber(username, roundNumber):
     roundEndTime = roundEndTime.time()
     roundStartTime = roundStartTime.time()
     strFile = username
+    strFile += '_'
     strFile += dataPerRound[0].date().strftime("%d%m%y")
     strFile += '.txt'
     try:
@@ -123,6 +124,7 @@ def GetCoordinateByRoundNumber(username, roundNumber):
     #  Jump the first Line
     f = f.readlines()[2:]
     i = 0
+
     for line in f:
         tempLine = line.split()
         timeTemp = tempLine[2]

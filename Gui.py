@@ -42,24 +42,20 @@ def GetUserID(textBox,loginFrame):
     for document in db:
         id=document['_id']
         flagType=str(document['type'])
-
     print("The user id is: "+str(id))
 
     if flagType=='1':
         userType="Admin"
         print(userType)
         WelcomePage(userType,prevFrame)
-
     if flagType=='2':
         userType="Lecturer"
         print(userType)
         WelcomePage(userType,prevFrame)
-
     if flagType=='0':
         userType="Student"
         print("the user type is: "+userType)
         WelcomePage(userType,prevFrame)
-
 
 def getSelectedGraph(graphSelection,username,userRound,dominateFlag):
     if(graphSelection=="Heat map"):
@@ -84,7 +80,7 @@ def CheckLecturerSelection(graphSelection,roundSelection,username,domFlag):
 def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     username = texbox.get("1.0", "end-1c")
     print("the reqursted id is: " + username)
-    getIDButton.pack_forget()
+    #getIDButton.pack_forget()
     numberOfRounds = db.GetNumberOfRoundByUsername(username)
     numberOfRoundArray = []
     for i in range(numberOfRounds):
