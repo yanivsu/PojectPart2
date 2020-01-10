@@ -106,7 +106,8 @@ def GetCoordinateByRoundNumber(username, roundNumber):
     xCor = []
     yCor = []
     dataPerRound = GetTimeDeatilsPerRound(username=username, roundNumber=roundNumber)
-    roundStartTime = dataPerRound[0]+(timedelta(seconds=20))
+    #  roundStartTime = dataPerRound[0]+(timedelta(seconds=20))  Im not sure if its correct line
+    roundStartTime = dataPerRound[0]
     roundLength = dataPerRound[1]  # [1] is delta for round length
     roundEndTime = roundStartTime + timedelta(seconds=roundLength)
     roundEndTime = roundEndTime.time()
@@ -123,11 +124,10 @@ def GetCoordinateByRoundNumber(username, roundNumber):
         return
     #  Jump the first Line
     f = f.readlines()[2:]
-    i = 0
-
     for line in f:
         tempLine = line.split()
         timeTemp = tempLine[2]
+        print(line)
         timeTemp = datetime.strptime(timeTemp, '%H:%M:%S').time()
         if (timeTemp >= roundStartTime and timeTemp <= roundEndTime):
             xCor.append(tempLine[0])

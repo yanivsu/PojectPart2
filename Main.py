@@ -5,6 +5,7 @@ import cv2
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pdf2image import convert_from_path, convert_from_bytes
+from matplotlib import pyplot, transforms
 import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
@@ -15,9 +16,9 @@ def Main():
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
     # db.DominatValue('Yaniv', 21)
-    # HeatMapFunction()
+    HeatMapFunction('Gulkin', 14, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
-    # PointDrawing()
+    # PointDrawing('Gulkin', 6)
     # SpeedUpEyes()
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
@@ -63,12 +64,17 @@ def HeatMapFunction(username,roundNumber,dominateFlag):
     for x in listOfCoodinate[0]:
         xCor.append(float(x))
     for y in listOfCoodinate[1]:
+        y = float(y)
+        #  Calibrate the camera y axis for the image
+        y -= 180
         yCor.append(float(y))
     plt.subplots(figsize=(12, 12))
     map_img = mpimg.imread('out.jpg')
     hmax = sns.kdeplot(xCor, yCor, cmap="Blues", shade=False)
     hmax.collections[0].set_alpha(0)
-    plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
+    #  Extent helps me to set the axis 0 =>2006 in
+    # X axis and 960 => 0 in y axis
+    plt.imshow(map_img, zorder=0, extent=[0, 2006, 960, 0], aspect='auto')
     #  Export File to PDF
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
@@ -83,7 +89,7 @@ def SpeedUpEyes(userName,userRound):
         xCor.append(float(x))
     for y in listOfCoodinate[1]:
         yCor.append(float(y))
-    timeOfRound = db.GetTimeDeatilsPerRound(userName,userRound)[1]
+    timeOfRound = db.GetTimeDeatilsPerRound(userName, userRound)[1]
     pointsCount = xCor.__len__()
     deltaTimePerPoint = pointsCount / timeOfRound
     #Calcuate Distance
@@ -180,6 +186,12 @@ def PDF2Image():
     for page in images:
         page.save('out.jpg', 'JPEG')
 def plt2PDF(fig):
-    fig.savefig("testPlot.pdf", bbox_inches='tight')
+    try:
+        fig.savefig("testPlot.pdf", bbox_inches='tight')
+    except:
+        print('Error please close the Testplot.pdf and try again')
     return
+def GetAvgSpeedOfSpeedUpEyes(speedOfEyes):
+    return sum(speedOfEyes) / len(speedOfEyes)
 Main()
+#Yaniv Change
