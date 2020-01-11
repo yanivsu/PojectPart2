@@ -15,10 +15,10 @@ def Main():
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
     # db.DominatValue('Yaniv', 21)
-    HeatMapFunction('Gulkin', 10, 1)
+    #HeatMapFunction('Gulkin', 14, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing('Gulkin', 10, 0)
-    # SpeedUpEyes()
+    SpeedUpEyes('Gulkin', 17)
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
     # CreateDominantCardBoard()
@@ -149,9 +149,9 @@ def SpeedUpEyes(userName,userRound):
         distanceArray.append(tempDistacne)
     # Data for plotting
     speedOfEyes = []  #  In km/s
-    pointPerMilliSecond = 1 / deltaTimePerPoint
+    pointPerMilliSecond = (timeOfRound / pointsCount)
     time = np.arange(0.0, timeOfRound, pointPerMilliSecond)
-    for i in range (len(distanceArray)):
+    for i in range(len(distanceArray)):
         speedOfEyes.append(float(distanceArray[i] / pointPerMilliSecond))
     fig, ax = plt.subplots()
     #  check the size of time
