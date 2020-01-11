@@ -148,6 +148,7 @@ def DominatValue(username, roundNumber):
     dominantArray = [0, 0, 0, 0]
     dominantFlag = -1
     numberInArray = 0
+    maxDominant = 0;
     cardsList = GetBoard(username=username, roundNumber=roundNumber)
     for card in cardsList:
         numberElements[int(cardsList[card][3])] += 1
@@ -155,21 +156,25 @@ def DominatValue(username, roundNumber):
         fillElements[int(cardsList[card][1])] += 1
         shapeElements[int(cardsList[card][0])] += 1
     for i in range(3):
-        if (numberElements[i] > 4):
+        if (numberElements[i] > 4 and numberElements[i] > maxDominant):
             dominantFlag = 3
+            maxDominant = numberElements[i]
             numberInArray = i
             dominantArray[0] += 1
-        if (colorElements[i] > 4):
+        if (colorElements[i] > 4 and colorElements[i] > maxDominant):
             dominantFlag = 2
             numberInArray = i
+            maxDominant = colorElements[i]
             dominantArray[1] += 1
-        if (fillElements[i] > 4):
+        if (fillElements[i] > 4 and fillElements[i] > maxDominant):
             dominantFlag = 1
             numberInArray = i
+            maxDominant = fillElements[i]
             dominantArray[1] += 1
-        if (shapeElements[i] > 4):
+        if (shapeElements[i] > 4 and shapeElements[i] > maxDominant):
             dominantFlag = 0
             numberInArray = i
+            maxDominant = shapeElements[i]
             dominantArray[1] += 1
     if (dominantFlag > -1):
         if(dominantFlag == 3):

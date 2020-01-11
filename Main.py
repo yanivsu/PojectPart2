@@ -10,15 +10,14 @@ import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
 import webbrowser
-
 def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
     # db.DominatValue('Yaniv', 21)
-    HeatMapFunction('Gulkin', 14, 0)
+    HeatMapFunction('Gulkin', 10, 1)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
-    # PointDrawing('Gulkin', 6)
+    # PointDrawing('Gulkin', 10, 0)
     # SpeedUpEyes()
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
@@ -29,24 +28,70 @@ def myplot(x, y, s, bins=1000):
     heatmap = gaussian_filter(heatmap, sigma=s)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
-def PointDrawing(userName,userRound):
+def PointDrawing(userName, userRound, dominateFlag):
+    removeFlag = 0
+    saveLastPointX = 0
+    saveLastPointY = 0
+    i = 0
     print("STARTING TO CREATE POINT DRAWING GRAPH")
-    listOfCardByRound = db.GetBoard(userName, userRound)
-    CreateCardBoard(listOfCardByRound)
+    if (dominateFlag == 0):
+        print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
+        listOfCardByRound = db.GetBoard(userName, int(userRound))
+        CreateCardBoard(listOfCardByRound)
+    if (dominateFlag == 1):
+        print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
+        listOfCardByRound = db.DominatValue(userName, int(userRound))
+        CreateDominantCardBoard(listOfCardByRound, userName, userRound)
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, userRound)
     xCor = []
     yCor = []
     for x in listOfCoodinate[0]:
-        xCor.append(float(x))
+        x = float(x)
+        #  Calibrate the camera in x axis for the image
+        x += 140
+        if x < 450 or x > 1650:
+            xCor.append(-190.0)
+        #  Yaniv think that is should be 300
+        elif x > saveLastPointX + 310 or x < saveLastPointX - 310:
+            saveLastPointX = x
+            xCor.append(x)
+        else:
+            xCor.append(-190.0)
     for y in listOfCoodinate[1]:
-        yCor.append(float(y))
-    plt.plot(xCor, yCor, 'bo-')
+        y = float(y)
+        #  Calibrate the camera in y axis for the image
+        y -= 200
+        if y > 755 or y < 200:
+            yCor.append(-190.0)
+        elif y > saveLastPointY + 130 or y < saveLastPointY - 130:
+            saveLastPointX = y
+            yCor.append(y)
+        else:
+            yCor.append(-190.0)
+    #  Remove all unnecessary points
+    while removeFlag == 0:
+        try:
+            if xCor[i] == -190.0 or yCor[i] == -190.0:
+                del xCor[i]
+                del yCor[i]
+            else:
+                i += 1
+        except:
+            print("Finish to remove unnecessary points")
+            removeFlag = 1
     map_img = mpimg.imread('out.jpg')
-    plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
+    try:
+        plt.plot(xCor, yCor, 'o-', color='blue')
+        plt.plot(xCor[0], yCor[0], 'o-', color='red')
+    except:
+        print('Sorry But this graph are not available because all points are too close.')
+        return
+    plt.imshow(map_img, zorder=0, extent=[0, 2006, 960, 0], aspect='auto')
     plt2PDF(plt)
+    webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-def HeatMapFunction(username,roundNumber,dominateFlag):
+def HeatMapFunction(username, roundNumber, dominateFlag):
     #  Connect to DB and create a Board
     if(dominateFlag==0):
       print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
@@ -55,7 +100,7 @@ def HeatMapFunction(username,roundNumber,dominateFlag):
     if (dominateFlag == 1):
       print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
       listOfCardByRound = db.DominatValue(username, int(roundNumber))
-      CreateDominantCardBoard(listOfCardByRound)
+      CreateDominantCardBoard(listOfCardByRound, username, int(roundNumber))
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(username, int(roundNumber))
     xCor = []
@@ -133,7 +178,7 @@ def CreateCardBoard(listOfImage):
         pdf.image(path + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The board creation is in finished ...')
-def CreateDominantCardBoard(listOfCardByRound):
+def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
     #  The GaussianBlur() uses the Gaussian kernel.
     #  The height and width of the kernel should be a positive and an odd number.
     #  Then you have to specify the X and Y direction that is sigmaX and sigmaY respectively.
@@ -151,7 +196,7 @@ def CreateDominantCardBoard(listOfCardByRound):
     for i in range(listOfCardByRound.__len__()):
         imageListHighlight.append(listOfCardByRound[i]+'.png')
     #  Get the all board list
-    listOfCardByRound = db.GetBoard('Gulkin', 3)
+    listOfCardByRound = db.GetBoard(username, roundNumber)
     for i in range(12):
         imageList.append(listOfCardByRound[str(i)] + '.png')
     #Create New Board with highlight cards
@@ -164,7 +209,7 @@ def CreateDominantCardBoard(listOfCardByRound):
              break
         if creationFlag == False:
             img = cv2.imread(path + imageList[i])
-            blur_image = cv2.GaussianBlur(img, (61, 61), 0)
+            blur_image = cv2.GaussianBlur(img, (81, 81), 0)
             cv2.imwrite(tempPath + imageList[i], blur_image)
         creationFlag = False
     pdf = FPDF('L', 'mm', 'A4')  # create an A4-size pdf document
@@ -177,7 +222,7 @@ def CreateDominantCardBoard(listOfCardByRound):
         else:
             x = x + 63.8
         pdf.image(tempPath + image, x, y, w, h)
-    pdf.output("tempCardHighlightBoard.pdf", "F")
+    pdf.output("tempCardBoard.pdf", "F")
     print('The dominant board creation is in finished ...')
 def PDF2Image():
     # To user this function u must install Popper and put the path into System Path
