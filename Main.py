@@ -93,11 +93,11 @@ def PointDrawing(userName, userRound, dominateFlag):
     plt.show()
 def HeatMapFunction(username, roundNumber, dominateFlag):
     #  Connect to DB and create a Board
-    if(dominateFlag==0):
+    if dominateFlag == 0:
       print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
       listOfCardByRound = db.GetBoard(username, int(roundNumber))
       CreateCardBoard(listOfCardByRound)
-    if (dominateFlag == 1):
+    if dominateFlag == 1:
       print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
       listOfCardByRound = db.DominatValue(username, int(roundNumber))
       CreateDominantCardBoard(listOfCardByRound, username, int(roundNumber))
@@ -148,16 +148,28 @@ def SpeedUpEyes(userName,userRound):
             break
         distanceArray.append(tempDistacne)
     # Data for plotting
-    speedOfEyes = []  #  In km/s
+    speedOfEyes = []  #  In mp/h
     pointPerMilliSecond = (timeOfRound / pointsCount)
     time = np.arange(0.0, timeOfRound, pointPerMilliSecond)
     for i in range(len(distanceArray)):
-        speedOfEyes.append(float(distanceArray[i] / pointPerMilliSecond))
+        speedOfEyes.append(float(distanceArray[i] / pointPerMilliSecond)*0.01)
     fig, ax = plt.subplots()
     #  check the size of time
     if time.__len__() > speedOfEyes.__len__():
         time = time[1:]
+    #  Get Max of speed
+    maxSpeed = max(speedOfEyes).__round__(2)
+    avgSpeed = GetAvgSpeedOfSpeedUpEyes(speedOfEyes=speedOfEyes).__round__(2)
+    plt.title('Speed of eye')
+    plt.xlabel('Time[Sec]')
+    plt.ylabel('Mp/h')
+    str1 = "Max Speed is:"+maxSpeed.__str__()
+    str2 = "Avg Speed is:"+avgSpeed.__str__()
+    plt.text(-2, 500, str1)
+    plt.text(-1.9, 520, str2)
     plt.plot(time, speedOfEyes, linestyle='solid', color='blue')
+    plt2PDF(plt)
+    webbrowser.open_new(r'testPlot.pdf')
     plt.show()
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
@@ -170,7 +182,7 @@ def CreateCardBoard(listOfImage):
     x, y, w, h = 0, 52.07, 47.6, 25.7
     i = 0
     for image in imageList:
-        if (x == 191.39999999999998):
+        if x == 191.39999999999998:
             x = 63.8
             y = y + 25.9
         else:
