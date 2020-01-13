@@ -10,13 +10,15 @@ import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
 import webbrowser
+import struct
 
 def Main():
     print()
+    durationTimeOnCatd('user8', 8)
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
     # db.DominatValue('Yaniv', 21)
-    HeatMapFunction('Gulkin', 14, 0)
+    #HeatMapFunction('Gulkin', 14, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing('Gulkin', 6)
     # SpeedUpEyes()
@@ -24,6 +26,105 @@ def Main():
     # PDF2Image()
     # CreateDominantCardBoard()
 # MyPlot function helps to maps all the point into gaussian numbers
+def getAnalysis(userName,roundNumber,analysisFlag):
+    print()
+    durationTimeOnCatd()
+def createPirChart(durationTimeList):
+    names = ("#1", "#2", "#3", "#4", "#5")
+    scores = [durationTimeList[0], durationTimeList[1], durationTimeList[2],
+              durationTimeList[3], durationTimeList[4]
+            ]
+    plt.axis("equal")
+    plt.pie(scores,labels=names,autopct="%0.2f%%")
+    plt.show()
+def createBarChart(durationTimeList):
+    fig = plt.figure(figsize=(7, 5))
+    names = ("#1", "#2", "#3", "#4", "#5")
+    scores = [durationTimeList[0], durationTimeList[1], durationTimeList[2],
+              durationTimeList[3], durationTimeList[4],
+          ]
+    position = [0, 1, 2, 3, 4]
+    plt.bar(position, scores, width=0.3)
+    plt.xticks(position, names)
+    plt.title("Gaze duration on cards")
+    plt.xlabel("Cards")
+    plt.ylabel("Time(sec)")
+    plt.show()
+
+def getNMaxElements(durationTimeList,N):
+     final_list = []
+     for i in range(0,N):
+         max1 = 0
+         for j in range(len(durationTimeList)):
+            if durationTimeList[j] > max1:
+             max1 = durationTimeList[j]
+         durationTimeList.remove(max1)
+         final_list.append(max1)
+     return final_list
+
+def durationTimeOnCatd(userName,userRound):
+    durationTimeList=[0,0,0,0,0,0,0,0,0,0,0,0]
+    maxNValues=[]
+    print(durationTimeList)
+    listOfCoodinate = db.GetCoordinateByRoundNumber(userName, int(userRound))
+    xCor = listOfCoodinate[0]
+    yCor = listOfCoodinate[1]
+    for i in range(len(xCor)):
+        xCor[i] = float(xCor[i])
+    for i in range(len(yCor)):
+        yCor[i] = float(yCor[i])
+
+    durationTimeList=getEyesOnCardsData(xCor,yCor)
+    maxNValues= getNMaxElements(durationTimeList,5)
+    createBarChart(maxNValues)
+    createPirChart(maxNValues)
+
+def getEyesOnCardsData(xCor,yCor):
+    durationTimeList=[0,0,0,0,0,0,0,0,0,0,0,0]
+    for i in range(len(xCor)):
+        # ---------------- FIRST ROW ----------------#
+        ####### Card Number 1 #######
+        if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
+            durationTimeList[0] = durationTimeList[0] + 0.085
+            ####### Card Number 2 #######
+        if (xCor[i] > 900.0 and xCor[i] < 1200.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
+            durationTimeList[1] = durationTimeList[1] + 0.085
+        ####### Card Number 3 #######
+        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
+            durationTimeList[2] = durationTimeList[2] + 0.085
+        # ---------------- SECEND ROW ----------------#
+        ####### Card Number 4 #######
+        if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 380.0 and yCor[i] < 480.0):
+            durationTimeList[3] = durationTimeList[3] + 0.085
+            ####### Card Number 5 #######
+        if (xCor[i] > 900.0 and xCor[i] < 1200.0 and yCor[i] > 380 and yCor[i] < 480.0):
+            durationTimeList[4] = durationTimeList[4] + 0.085
+            ####### Card Number 6 #######
+        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 380 and yCor[i] < 480.0):
+            durationTimeList[5] = durationTimeList[5] + 0.085
+        # ---------------- THIRED ROW ----------------#
+        ####### Card Number 7 #######
+        if (xCor[i] > 400.0 and xCor[i] < 750 and yCor[i] > 490.0 and yCor[i] < 590.0):
+            durationTimeList[6] = durationTimeList[6] + 0.085
+            ####### Card Number 8 #######
+        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 490 and yCor[i] < 590):
+            durationTimeList[7] = durationTimeList[7] + 0.085
+            ####### Card Number 9 #######
+        if (xCor[i] > 1300 and xCor[i] < 1600 and yCor[i] > 490 and yCor[i] < 590):
+            durationTimeList[8] = durationTimeList[8] + 0.085
+        # ---------------- FOURTH ROW ----------------#
+        ####### Card Number 10 #######
+        if (xCor[i] > 425 and xCor[i] < 725 and yCor[i] > 600 and yCor[i] < 700):
+            durationTimeList[9] = durationTimeList[9] + 0.0085
+            ####### Card Number 11 #######
+        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 600 and yCor[i] < 700):
+            durationTimeList[10] = durationTimeList[10] + 0.0085
+            ####### Card Number 12 #######
+        if (xCor[i] > 1325 and xCor[i] < 1625 and yCor[i] > 600 and yCor[i] < 700):
+            durationTimeList[11] = durationTimeList[11] + 0.0085
+    return durationTimeList
+
+
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
     heatmap = gaussian_filter(heatmap, sigma=s)
@@ -46,7 +147,7 @@ def PointDrawing(userName,userRound):
     plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
     plt2PDF(plt)
     plt.show()
-def HeatMapFunction(username,roundNumber,dominateFlag):
+def HeatMapFunction(username,roundNumber,dominateFlag,analysisFlag):
     #  Connect to DB and create a Board
     if(dominateFlag==0):
       print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")

@@ -57,26 +57,26 @@ def GetUserID(textBox,loginFrame):
         print("the user type is: "+userType)
         WelcomePage(userType,prevFrame)
 
-def getSelectedGraph(graphSelection,username,userRound,dominateFlag):
+def getSelectedGraph(graphSelection,username,userRound,dominateFlag,analysisFlag):
     if(graphSelection=="Heat map"):
-        graph.HeatMapFunction(username,userRound,dominateFlag)
+        graph.HeatMapFunction(username,userRound,dominateFlag,analysisFlag)
     if (graphSelection == "Eye movment speed"):
         graph.SpeedUpEyes(username,userRound)
-        #graph.HeatMapFunction(username, userRound, dominateFlag)
+        #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
     if (graphSelection == "Point drawing"):
         graph.PointDrawing(username,userRound)
-        #graph.HeatMapFunction(username, userRound, dominateFlag)
+        #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
 
     #if (graphSelection == "Eye movment speed"):
     #if (graphSelection == "Point drawing"):
 
-def CheckLecturerSelection(graphSelection,roundSelection,username,domFlag):
+def CheckLecturerSelection(graphSelection,roundSelection,username,domFlag,analysisFlag):
     if graphSelection =="":
         messagebox.showinfo("ERROR", "Please select graph type")
     if roundSelection =="":
         messagebox.showinfo("ERROR", "Please select round to present")
     if(graphSelection!="" and roundSelection!=""):
-        getSelectedGraph(graphSelection, username,roundSelection, domFlag)
+        getSelectedGraph(graphSelection, username,roundSelection, domFlag,analysisFlag)
 def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     username = texbox.get("1.0", "end-1c")
     print("the reqursted id is: " + username)
@@ -84,13 +84,14 @@ def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     numberOfRounds = db.GetNumberOfRoundByUsername(username)
     numberOfRoundArray = []
     for i in range(numberOfRounds):
-        numberOfRoundArray.append(i)
+        numberOfRoundArray.append(i+1)
     #spaceLabel = Label(currentFrame, text="").pack()
     roundsLabel = Label(currentFrame, text=username+" rounds").pack()
     var =IntVar()
+    var2=IntVar()
     roundsComboBox = Combobox(currentFrame, values = numberOfRoundArray)
     roundsComboBox.pack()
-    spaceLabel = Label(currentFrame, text="").pack()
+   # spaceLabel = Label(currentFrame, text="").pack()
     graphSelectionLabel = Label(currentFrame, text="Choose your graph type").pack()
     graphSelectionComboBox = Combobox(currentFrame,
                                       values = ["Heat map","Eye movment speed","Point drawing"])
@@ -98,10 +99,13 @@ def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     spaceLabel = Label(currentFrame, text="").pack()
     checkBoxButton=Checkbutton(currentFrame,text="Show only dominate cards",variable=var)
     checkBoxButton.pack()
-    spaceLabel = Label(currentFrame, text="").pack()
+    checkBoxButton2=Checkbutton(currentFrame,text="Show analysis ",variable=var2)
+    checkBoxButton2.pack()
+   #spaceLabel = Label(currentFrame, text="").pack()
     next=Button(currentFrame,text="Get graph",
                 command=lambda: CheckLecturerSelection(
-                graphSelectionComboBox.get(),roundsComboBox.get(),username,var.get()))
+                graphSelectionComboBox.get(),roundsComboBox.get(),
+                username,var.get(),var2.get()))
     next.pack()
 def createAdminsFrame(userType,prevFrame):
     welcomeAdminFrame = Frame(loginScrren)
