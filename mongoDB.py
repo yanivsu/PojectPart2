@@ -213,4 +213,3 @@ def GetdominantCardArray(dominantArray, cardsList, numberInArray, dominatFlag):
         if(int(cardsList[card][dominatFlag]) == numberInArray):
             dominantCardArray.append(cardsList[card])
     return dominantCardArray
-

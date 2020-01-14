@@ -10,54 +10,201 @@ import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
 import webbrowser
-import struct
-
 def Main():
     print()
-    durationTimeOnCatd('user8', 8)
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
     # db.DominatValue('Yaniv', 21)
     #HeatMapFunction('Gulkin', 14, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing('Gulkin', 10, 0)
+    durationTimeOnCatd('Gulkin',17)
     SpeedUpEyes('Gulkin', 17)
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
     # CreateDominantCardBoard()
 # MyPlot function helps to maps all the point into gaussian numbers
+
+
+def getNMaxElements(durationTimeList,N):
+     final_list = []
+     for i in range(0,N):
+         max1 = 0
+         for j in range(len(durationTimeList)):
+            if durationTimeList[j] > max1:
+             max1 = durationTimeList[j]
+         durationTimeList.remove(max1)
+         final_list.append(max1)
+     return final_list
+
+
+def durationTimeOnCatd(userName,userRound):
+    durationTimeList=[0,0,0,0,0,0,0,0,0,0,0,0]
+    maxNValues=[]
+    print(durationTimeList)
+    listOfCoodinate = db.GetCoordinateByRoundNumber(userName, int(userRound))
+    xCor = listOfCoodinate[0]
+    yCor = listOfCoodinate[1]
+    for i in range(len(xCor)):
+        xCor[i] = float(xCor[i])
+    for i in range(len(yCor)):
+        yCor[i] = float(yCor[i])
+
+    durationTimeList=getEyesOnCardsData(xCor,yCor)
+    maxNValues= getNMaxElements(durationTimeList,5)
+    createBarChart(maxNValues)
+    createPirChart(maxNValues)
+
+def getAnalysis(userName,roundNumber,analysisFlag):
+    print()
+    durationTimeOnCatd()
+
+def createPirChart(durationTimeList):
+    names = ("#1", "#2", "#3", "#4", "#5")
+    scores = [durationTimeList[0], durationTimeList[1], durationTimeList[2],
+              durationTimeList[3], durationTimeList[4]
+            ]
+    plt.axis("equal")
+    plt.pie(scores,labels=names,autopct="%0.2f%%")
+    plt.show()
+
+def createBarChart(durationTimeList):
+    fig = plt.figure(figsize=(7, 5))
+    names = ("#1", "#2", "#3", "#4", "#5")
+    scores = [durationTimeList[0], durationTimeList[1], durationTimeList[2],
+              durationTimeList[3], durationTimeList[4],
+          ]
+    position = [0, 1, 2, 3, 4]
+    plt.bar(position, scores, width=0.3)
+    plt.xticks(position, names)
+    plt.title("Gaze duration on cards")
+    plt.xlabel("Cards")
+    plt.ylabel("Time(sec)")
+    plt.show()
+
+def getEyesOnCardsData(xCor,yCor):
+    durationTimeList=[0,0,0,0,0,0,0,0,0,0,0,0]
+    for i in range(len(xCor)):
+        # ---------------- FIRST ROW ----------------#
+        ####### Card Number 1 #######
+        if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
+            durationTimeList[0] = durationTimeList[0] + 0.085
+            ####### Card Number 2 #######
+        if (xCor[i] > 900.0 and xCor[i] < 1200.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
+            durationTimeList[1] = durationTimeList[1] + 0.085
+        ####### Card Number 3 #######
+        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
+            durationTimeList[2] = durationTimeList[2] + 0.085
+        # ---------------- SECEND ROW ----------------#
+        ####### Card Number 4 #######
+        if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 380.0 and yCor[i] < 480.0):
+            durationTimeList[3] = durationTimeList[3] + 0.085
+            ####### Card Number 5 #######
+        if (xCor[i] > 900.0 and xCor[i] < 1200.0 and yCor[i] > 380 and yCor[i] < 480.0):
+            durationTimeList[4] = durationTimeList[4] + 0.085
+            ####### Card Number 6 #######
+        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 380 and yCor[i] < 480.0):
+            durationTimeList[5] = durationTimeList[5] + 0.085
+        # ---------------- THIRED ROW ----------------#
+        ####### Card Number 7 #######
+        if (xCor[i] > 400.0 and xCor[i] < 750 and yCor[i] > 490.0 and yCor[i] < 590.0):
+            durationTimeList[6] = durationTimeList[6] + 0.085
+            ####### Card Number 8 #######
+        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 490 and yCor[i] < 590):
+            durationTimeList[7] = durationTimeList[7] + 0.085
+            ####### Card Number 9 #######
+        if (xCor[i] > 1300 and xCor[i] < 1600 and yCor[i] > 490 and yCor[i] < 590):
+            durationTimeList[8] = durationTimeList[8] + 0.085
+        # ---------------- FOURTH ROW ----------------#
+        ####### Card Number 10 #######
+        if (xCor[i] > 425 and xCor[i] < 725 and yCor[i] > 600 and yCor[i] < 700):
+            durationTimeList[9] = durationTimeList[9] + 0.0085
+            ####### Card Number 11 #######
+        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 600 and yCor[i] < 700):
+            durationTimeList[10] = durationTimeList[10] + 0.0085
+            ####### Card Number 12 #######
+        if (xCor[i] > 1325 and xCor[i] < 1625 and yCor[i] > 600 and yCor[i] < 700):
+            durationTimeList[11] = durationTimeList[11] + 0.0085
+    return durationTimeList
+
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
     heatmap = gaussian_filter(heatmap, sigma=s)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
-def PointDrawing(userName,userRound):
+def PointDrawing(userName, userRound, dominateFlag):
+    removeFlag = 0
+    saveLastPointX = 0
+    saveLastPointY = 0
+    i = 0
     print("STARTING TO CREATE POINT DRAWING GRAPH")
-    listOfCardByRound = db.GetBoard(userName, userRound)
-    CreateCardBoard(listOfCardByRound)
+    if (dominateFlag == 0):
+        print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
+        listOfCardByRound = db.GetBoard(userName, int(userRound))
+        CreateCardBoard(listOfCardByRound)
+    if (dominateFlag == 1):
+        print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
+        listOfCardByRound = db.DominatValue(userName, int(userRound))
+        CreateDominantCardBoard(listOfCardByRound, userName, userRound)
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, userRound)
     xCor = []
     yCor = []
     for x in listOfCoodinate[0]:
-        xCor.append(float(x))
+        x = float(x)
+        #  Calibrate the camera in x axis for the image
+        x += 140
+        if x < 450 or x > 1650:
+            xCor.append(-190.0)
+        #  Yaniv think that is should be 300
+        elif x > saveLastPointX + 310 or x < saveLastPointX - 310:
+            saveLastPointX = x
+            xCor.append(x)
+        else:
+            xCor.append(-190.0)
     for y in listOfCoodinate[1]:
-        yCor.append(float(y))
-    plt.plot(xCor, yCor, 'bo-')
+        y = float(y)
+        #  Calibrate the camera in y axis for the image
+        y -= 200
+        if y > 755 or y < 200:
+            yCor.append(-190.0)
+        elif y > saveLastPointY + 130 or y < saveLastPointY - 130:
+            saveLastPointX = y
+            yCor.append(y)
+        else:
+            yCor.append(-190.0)
+    #  Remove all unnecessary points
+    while removeFlag == 0:
+        try:
+            if xCor[i] == -190.0 or yCor[i] == -190.0:
+                del xCor[i]
+                del yCor[i]
+            else:
+                i += 1
+        except:
+            print("Finish to remove unnecessary points")
+            removeFlag = 1
     map_img = mpimg.imread('out.jpg')
-    plt.imshow(map_img, zorder=0, extent=[0, 2006, 0, 960], aspect='auto')
+    try:
+        plt.plot(xCor, yCor, 'o-', color='blue')
+        plt.plot(xCor[0], yCor[0], 'o-', color='red')
+    except:
+        print('Sorry But this graph are not available because all points are too close.')
+        return
+    plt.imshow(map_img, zorder=0, extent=[0, 2006, 960, 0], aspect='auto')
     plt2PDF(plt)
+    webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-def HeatMapFunction(username,roundNumber,dominateFlag):
+def HeatMapFunction(username, roundNumber, dominateFlag):
     #  Connect to DB and create a Board
-    if(dominateFlag==0):
+    if dominateFlag == 0:
       print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
       listOfCardByRound = db.GetBoard(username, int(roundNumber))
       CreateCardBoard(listOfCardByRound)
-    if (dominateFlag == 1):
+    if dominateFlag == 1:
       print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
       listOfCardByRound = db.DominatValue(username, int(roundNumber))
-      CreateDominantCardBoard(listOfCardByRound)
+      CreateDominantCardBoard(listOfCardByRound, username, int(roundNumber))
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(username, int(roundNumber))
     xCor = []
@@ -105,16 +252,28 @@ def SpeedUpEyes(userName,userRound):
             break
         distanceArray.append(tempDistacne)
     # Data for plotting
-    speedOfEyes = []  #  In km/s
-    pointPerMilliSecond = 1 / deltaTimePerPoint
+    speedOfEyes = []  #  In mp/h
+    pointPerMilliSecond = (timeOfRound / pointsCount)
     time = np.arange(0.0, timeOfRound, pointPerMilliSecond)
-    for i in range (len(distanceArray)):
-        speedOfEyes.append(float(distanceArray[i] / pointPerMilliSecond))
+    for i in range(len(distanceArray)):
+        speedOfEyes.append(float(distanceArray[i] / pointPerMilliSecond)*0.01)
     fig, ax = plt.subplots()
     #  check the size of time
     if time.__len__() > speedOfEyes.__len__():
         time = time[1:]
+    #  Get Max of speed
+    maxSpeed = max(speedOfEyes).__round__(2)
+    avgSpeed = GetAvgSpeedOfSpeedUpEyes(speedOfEyes=speedOfEyes).__round__(2)
+    plt.title('Speed of eye')
+    plt.xlabel('Time[Sec]')
+    plt.ylabel('Mp/h')
+    str1 = "Max Speed is:"+maxSpeed.__str__()
+    str2 = "Avg Speed is:"+avgSpeed.__str__()
+    plt.text(-2, 500, str1)
+    plt.text(-1.9, 520, str2)
     plt.plot(time, speedOfEyes, linestyle='solid', color='blue')
+    plt2PDF(plt)
+    webbrowser.open_new(r'testPlot.pdf')
     plt.show()
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
@@ -127,7 +286,7 @@ def CreateCardBoard(listOfImage):
     x, y, w, h = 0, 52.07, 47.6, 25.7
     i = 0
     for image in imageList:
-        if (x == 191.39999999999998):
+        if x == 191.39999999999998:
             x = 63.8
             y = y + 25.9
         else:
@@ -135,7 +294,7 @@ def CreateCardBoard(listOfImage):
         pdf.image(path + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The board creation is in finished ...')
-def CreateDominantCardBoard(listOfCardByRound):
+def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
     #  The GaussianBlur() uses the Gaussian kernel.
     #  The height and width of the kernel should be a positive and an odd number.
     #  Then you have to specify the X and Y direction that is sigmaX and sigmaY respectively.
@@ -153,7 +312,7 @@ def CreateDominantCardBoard(listOfCardByRound):
     for i in range(listOfCardByRound.__len__()):
         imageListHighlight.append(listOfCardByRound[i]+'.png')
     #  Get the all board list
-    listOfCardByRound = db.GetBoard('Gulkin', 3)
+    listOfCardByRound = db.GetBoard(username, roundNumber)
     for i in range(12):
         imageList.append(listOfCardByRound[str(i)] + '.png')
     #Create New Board with highlight cards
@@ -166,7 +325,7 @@ def CreateDominantCardBoard(listOfCardByRound):
              break
         if creationFlag == False:
             img = cv2.imread(path + imageList[i])
-            blur_image = cv2.GaussianBlur(img, (61, 61), 0)
+            blur_image = cv2.GaussianBlur(img, (81, 81), 0)
             cv2.imwrite(tempPath + imageList[i], blur_image)
         creationFlag = False
     pdf = FPDF('L', 'mm', 'A4')  # create an A4-size pdf document
@@ -179,7 +338,7 @@ def CreateDominantCardBoard(listOfCardByRound):
         else:
             x = x + 63.8
         pdf.image(tempPath + image, x, y, w, h)
-    pdf.output("tempCardHighlightBoard.pdf", "F")
+    pdf.output("tempCardBoard.pdf", "F")
     print('The dominant board creation is in finished ...')
 def PDF2Image():
     # To user this function u must install Popper and put the path into System Path
