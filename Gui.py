@@ -18,11 +18,9 @@ def createLoginFrame(prevFrame,currentFrame):
     spaceLabel = Label(loginFrame, text="").pack()
     nextButton = Button(loginFrame, height=1, width=10, text="Login",
                         command=lambda: GetUserID(textBox, loginFrame)).pack()
-
 def presentPrevScreen(prevFrame, userType, currentFrame):
     removeFrame=currentFrame
     removeFrame.forget()
-
 def GetUserID(textBox,loginFrame):
     prevFrame=loginFrame
     userType=""
@@ -56,7 +54,6 @@ def GetUserID(textBox,loginFrame):
         userType="Student"
         print("the user type is: "+userType)
         WelcomePage(userType,prevFrame)
-
 def getSelectedGraph(graphSelection,username,userRound,dominateFlag,analysisFlag):
     if(graphSelection=="Heat map"):
         graph.HeatMapFunction(username,userRound,dominateFlag,analysisFlag)
@@ -64,12 +61,11 @@ def getSelectedGraph(graphSelection,username,userRound,dominateFlag,analysisFlag
         graph.SpeedUpEyes(username,userRound)
         #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
     if (graphSelection == "Point drawing"):
-        graph.PointDrawing(username,userRound)
+        graph.PointDrawing(username, userRound, dominateFlag)
         #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
 
     #if (graphSelection == "Eye movment speed"):
     #if (graphSelection == "Point drawing"):
-
 def CheckLecturerSelection(graphSelection,roundSelection,username,domFlag,analysisFlag):
     if graphSelection =="":
         messagebox.showinfo("ERROR", "Please select graph type")
@@ -117,7 +113,6 @@ def createAdminsFrame(userType,prevFrame):
     spaceLabel = Label(text="")
     signOutButton = Button(welcomeAdminFrame, height=1, width=10, text="Sign-out",
                            command=lambda: createLoginFrame(prevFrame,currentFrame)).pack()
-
 def CreateViewFrame(prevFrame):
     forgetFrame=prevFrame
     forgetFrame.forget()
@@ -133,7 +128,6 @@ def CreateViewFrame(prevFrame):
     getIDButton.pack()
     spaceLabel = Label(text="").pack()
     #signOutButton = Button(viewFrame, height=1, width=10, text="Sign-out",).pack()
-
 def createLecturerFrame(userType,prevFrame):
     welcomeLecturerFrame = Frame(loginScrren)
     currentFrame = welcomeLecturerFrame
@@ -155,7 +149,6 @@ def createLecturerFrame(userType,prevFrame):
     signOutButton = Button(welcomeLecturerFrame, height=1, width=10,
                            text="Sign-out",
                            command=lambda: createLoginFrame(prevFrame,currentFrame)).pack()
-
 def createStudentsFrame(userType,prevFrame):
     welcomeStudentFrame = Frame(loginScrren)
     currentFrame = welcomeStudentFrame
@@ -169,7 +162,6 @@ def createStudentsFrame(userType,prevFrame):
     signOutButton = Button(welcomeStudentFrame, height=1, width=10, text="Sign-out",
                         command=lambda: createLoginFrame(prevFrame,currentFrame)).pack()
     spaceLabel = Label(welcomeStudentFrame,text="",).pack()
-
 def WelcomePage(userType,prevFrame):
     forgetFrame=prevFrame
     forgetFrame.forget()
@@ -180,7 +172,6 @@ def WelcomePage(userType,prevFrame):
         createLecturerFrame(userType,prevFrame)
     if (userType == "Student"):
         createStudentsFrame(userType,prevFrame)
-
 def StartPage():
     global loginScrren
     loginScrren=Tk()
@@ -201,6 +192,5 @@ def StartPage():
     nextButton=Button(loginFrame, height=1, width=10, text="Login",
                       command=lambda: GetUserID(textBox, loginFrame)).pack()
     loginScrren.mainloop()
-
 client = MongoClient('mongodb://admin:matanman@ds031822.mongolab.com:31822/admin?authSource=setstudy')
 StartPage()

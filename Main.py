@@ -18,17 +18,15 @@ def Main():
     #HeatMapFunction('Gulkin', 14, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing('Gulkin', 10, 0)
-    durationTimeOnCatd('Gulkin',17)
-    SpeedUpEyes('Gulkin', 17)
+    # durationTimeOnCatd('Gulkin',17)
+    # SpeedUpEyes('Gulkin', 17)
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
     # CreateDominantCardBoard()
 # MyPlot function helps to maps all the point into gaussian numbers
-
-
-def getNMaxElements(durationTimeList,N):
+def getNMaxElements(durationTimeList, N):
      final_list = []
-     for i in range(0,N):
+     for i in range(0, N):
          max1 = 0
          for j in range(len(durationTimeList)):
             if durationTimeList[j] > max1:
@@ -38,9 +36,9 @@ def getNMaxElements(durationTimeList,N):
      return final_list
 
 
-def durationTimeOnCatd(userName,userRound):
-    durationTimeList=[0,0,0,0,0,0,0,0,0,0,0,0]
-    maxNValues=[]
+def durationTimeOnCatd(userName, userRound):
+    durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    maxNValues = []
     print(durationTimeList)
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, int(userRound))
     xCor = listOfCoodinate[0]
