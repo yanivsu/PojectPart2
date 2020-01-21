@@ -14,12 +14,12 @@ def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
-    # db.DominatValue('Yaniv', 21)
-    #HeatMapFunction('Gulkin', 14, 0)
+    db.DominatValue('Yaniv', 21)
+    # HeatMapFunction('user1', 7, 0, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
-    # PointDrawing('Gulkin', 10, 0)
-    # durationTimeOnCatd('Gulkin',17)
-    # SpeedUpEyes('Gulkin', 17)
+    # PointDrawing('user1', 7, 0)
+    # durationTimeOnCard('user1', 7)
+    # SpeedUpEyes('user4', 7)
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
     # CreateDominantCardBoard()
@@ -34,9 +34,7 @@ def getNMaxElements(durationTimeList, N):
          durationTimeList.remove(max1)
          final_list.append(max1)
      return final_list
-
-
-def durationTimeOnCatd(userName, userRound):
+def durationTimeOnCard(userName, userRound):
     durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     maxNValues = []
     print(durationTimeList)
@@ -47,84 +45,87 @@ def durationTimeOnCatd(userName, userRound):
         xCor[i] = float(xCor[i])
     for i in range(len(yCor)):
         yCor[i] = float(yCor[i])
-
-    durationTimeList=getEyesOnCardsData(xCor,yCor)
-    maxNValues= getNMaxElements(durationTimeList,5)
-    createBarChart(maxNValues)
-    createPirChart(maxNValues)
-
-def getAnalysis(userName,roundNumber,analysisFlag):
+    roundTime = db.GetTimeDeatilsPerRound(userName, userRound)
+    durationTimeList = getEyesOnCardsData(xCor, yCor, roundTime[1])
+    # maxNValues = getNMaxElements(durationTimeList, 5)
+    maxNValues = GetMaxIndices(durationTimeList)
+    createBarChart(maxNValues, durationTimeList, roundTime[1], userName)
+    createPieChart(maxNValues, durationTimeList, roundTime[1], userName)
+def getAnalysis(userName, roundNumber, analysisFlag):
     print()
-    durationTimeOnCatd()
-
-def createPirChart(durationTimeList):
-    names = ("#1", "#2", "#3", "#4", "#5")
-    scores = [durationTimeList[0], durationTimeList[1], durationTimeList[2],
-              durationTimeList[3], durationTimeList[4]
-            ]
+    durationTimeOnCard()
+def createPieChart(maxNValues, durationTimeList, roundTime, userName):
+    names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
+    scores = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
+              durationTimeList[maxNValues[3]], durationTimeList[maxNValues[4]]]
     plt.axis("equal")
-    plt.pie(scores,labels=names,autopct="%0.2f%%")
+    plt.pie(scores, labels=names, autopct="%0.2f%%")
+    plt.title('PieChart ' + userName)
+    plt2PDFPie(plt)
+    webbrowser.open_new(r'testPlotPie.pdf')
     plt.show()
-
-def createBarChart(durationTimeList):
+def createBarChart(maxNValues, durationTimeList, roundTime, userName):
     fig = plt.figure(figsize=(7, 5))
-    names = ("#1", "#2", "#3", "#4", "#5")
-    scores = [durationTimeList[0], durationTimeList[1], durationTimeList[2],
-              durationTimeList[3], durationTimeList[4],
-          ]
+    names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
+    scores = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
+              durationTimeList[maxNValues[3]], durationTimeList[maxNValues[4]]]
     position = [0, 1, 2, 3, 4]
-    plt.bar(position, scores, width=0.3)
+    plt.grid()
+    plt.ylim(0, roundTime)
     plt.xticks(position, names)
+    plt.bar(position, scores, width=0.3)
     plt.title("Gaze duration on cards")
     plt.xlabel("Cards")
     plt.ylabel("Time(sec)")
+    plt.title('Bar Char ' + userName)
+    plt2PDFBar(plt)
+    webbrowser.open_new(r'testPlotBarChar.pdf')
     plt.show()
-
-def getEyesOnCardsData(xCor,yCor):
-    durationTimeList=[0,0,0,0,0,0,0,0,0,0,0,0]
+def getEyesOnCardsData(xCor, yCor, roundTime):
+    durationTimeList=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    deltaTime = (roundTime / len(xCor))
     for i in range(len(xCor)):
         # ---------------- FIRST ROW ----------------#
         ####### Card Number 1 #######
-        if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
-            durationTimeList[0] = durationTimeList[0] + 0.085
+        if (xCor[i] > 400.0 and xCor[i] < 760.0 and yCor[i] > 410.0 and yCor[i] < 530.0):
+            durationTimeList[0] = durationTimeList[0] + deltaTime
             ####### Card Number 2 #######
-        if (xCor[i] > 900.0 and xCor[i] < 1200.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
-            durationTimeList[1] = durationTimeList[1] + 0.085
+        if (xCor[i] > 860.0 and xCor[i] < 1200.0 and yCor[i] > 410.0 and yCor[i] < 530.0):
+            durationTimeList[1] = durationTimeList[1] + deltaTime
         ####### Card Number 3 #######
-        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 250.0 and yCor[i] < 350.0):
-            durationTimeList[2] = durationTimeList[2] + 0.085
-        # ---------------- SECEND ROW ----------------#
+        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 410.0 and yCor[i] < 530.0):
+            durationTimeList[2] = durationTimeList[2] + deltaTime
+        # ---------------- SECOND ROW ----------------#
         ####### Card Number 4 #######
-        if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 380.0 and yCor[i] < 480.0):
-            durationTimeList[3] = durationTimeList[3] + 0.085
+        if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 560.0 and yCor[i] < 660.0):
+            durationTimeList[3] = durationTimeList[3] + deltaTime
             ####### Card Number 5 #######
-        if (xCor[i] > 900.0 and xCor[i] < 1200.0 and yCor[i] > 380 and yCor[i] < 480.0):
-            durationTimeList[4] = durationTimeList[4] + 0.085
+        if (xCor[i] > 875.0 and xCor[i] < 1200.0 and yCor[i] > 560.0 and yCor[i] < 660.0):
+            durationTimeList[4] = durationTimeList[4] + deltaTime
             ####### Card Number 6 #######
-        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 380 and yCor[i] < 480.0):
-            durationTimeList[5] = durationTimeList[5] + 0.085
-        # ---------------- THIRED ROW ----------------#
+        if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 560.0 and yCor[i] < 660.0):
+            durationTimeList[5] = durationTimeList[5] + deltaTime
+        # ---------------- THIRD ROW ----------------#
         ####### Card Number 7 #######
-        if (xCor[i] > 400.0 and xCor[i] < 750 and yCor[i] > 490.0 and yCor[i] < 590.0):
-            durationTimeList[6] = durationTimeList[6] + 0.085
+        if (xCor[i] > 400.0 and xCor[i] < 750 and yCor[i] > 670.0 and yCor[i] < 770.0):
+            durationTimeList[6] = durationTimeList[6] + deltaTime
             ####### Card Number 8 #######
-        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 490 and yCor[i] < 590):
-            durationTimeList[7] = durationTimeList[7] + 0.085
+        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 670.0 and yCor[i] < 770.0):
+            durationTimeList[7] = durationTimeList[7] + deltaTime
             ####### Card Number 9 #######
-        if (xCor[i] > 1300 and xCor[i] < 1600 and yCor[i] > 490 and yCor[i] < 590):
-            durationTimeList[8] = durationTimeList[8] + 0.085
+        if (xCor[i] > 1300 and xCor[i] < 1600 and yCor[i] > 670.0 and yCor[i] < 770.0):
+            durationTimeList[8] = durationTimeList[8] + deltaTime
         # ---------------- FOURTH ROW ----------------#
         ####### Card Number 10 #######
-        if (xCor[i] > 425 and xCor[i] < 725 and yCor[i] > 600 and yCor[i] < 700):
-            durationTimeList[9] = durationTimeList[9] + 0.0085
+        if (xCor[i] > 425 and xCor[i] < 725 and yCor[i] > 780 and yCor[i] < 880):
+            durationTimeList[9] = durationTimeList[9] + deltaTime
             ####### Card Number 11 #######
-        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 600 and yCor[i] < 700):
-            durationTimeList[10] = durationTimeList[10] + 0.0085
+        if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 780 and yCor[i] < 880):
+            durationTimeList[10] = durationTimeList[10] + deltaTime
             ####### Card Number 12 #######
-        if (xCor[i] > 1325 and xCor[i] < 1625 and yCor[i] > 600 and yCor[i] < 700):
-            durationTimeList[11] = durationTimeList[11] + 0.0085
+        if (xCor[i] > 1325 and xCor[i] < 1625 and yCor[i] > 780 and yCor[i] < 880):
+            durationTimeList[11] = durationTimeList[11] + deltaTime
     return durationTimeList
-
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
     heatmap = gaussian_filter(heatmap, sigma=s)
@@ -146,29 +147,27 @@ def PointDrawing(userName, userRound, dominateFlag):
         CreateDominantCardBoard(listOfCardByRound, userName, userRound)
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, userRound)
+    roundTime = db.GetTimeDeatilsPerRound(userName, userRound)
     xCor = []
     yCor = []
     for x in listOfCoodinate[0]:
         x = float(x)
-        #  Calibrate the camera in x axis for the image
-        x += 140
-        if x < 450 or x > 1650:
+        if x < 580 or x > 1650:
             xCor.append(-190.0)
-        #  Yaniv think that is should be 300
-        elif x > saveLastPointX + 310 or x < saveLastPointX - 310:
+        elif x > saveLastPointX + 200 or x < saveLastPointX - 200:
             saveLastPointX = x
+            x *= 1.8
+            x -= 660
             xCor.append(x)
         else:
             xCor.append(-190.0)
     for y in listOfCoodinate[1]:
         y = float(y)
-        #  Calibrate the camera in y axis for the image
-        y -= 200
-        if y > 755 or y < 200:
+        if y > 900 or y < 300:
             yCor.append(-190.0)
-        elif y > saveLastPointY + 130 or y < saveLastPointY - 130:
+        elif y > saveLastPointY or y < saveLastPointY :
             saveLastPointX = y
-            yCor.append(y)
+            yCor.append(y - 150)
         else:
             yCor.append(-190.0)
     #  Remove all unnecessary points
@@ -185,6 +184,9 @@ def PointDrawing(userName, userRound, dominateFlag):
     map_img = mpimg.imread('out.jpg')
     try:
         plt.plot(xCor, yCor, 'o-', color='blue')
+        plt.title('Point Drawing Map ' + userName)
+        plt.text(5, 100, "Round Time: " + roundTime[1].__str__())
+        plt.text(5, 135, "Fast Movements: " + xCor.__len__().__str__())
         plt.plot(xCor[0], yCor[0], 'o-', color='red')
     except:
         print('Sorry But this graph are not available because all points are too close.')
@@ -193,7 +195,7 @@ def PointDrawing(userName, userRound, dominateFlag):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-def HeatMapFunction(username, roundNumber, dominateFlag):
+def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     #  Connect to DB and create a Board
     if dominateFlag == 0:
       print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
@@ -209,6 +211,9 @@ def HeatMapFunction(username, roundNumber, dominateFlag):
     yCor = []
     #  Convert String point to float point
     for x in listOfCoodinate[0]:
+        x = float(x)
+        #  Calibrate the camera x axis for the image
+        x -= 50
         xCor.append(float(x))
     for y in listOfCoodinate[1]:
         y = float(y)
@@ -221,6 +226,7 @@ def HeatMapFunction(username, roundNumber, dominateFlag):
     hmax.collections[0].set_alpha(0)
     #  Extent helps me to set the axis 0 =>2006 in
     # X axis and 960 => 0 in y axis
+    plt.title('HeatMap ' + username)
     plt.imshow(map_img, zorder=0, extent=[0, 2006, 960, 0], aspect='auto')
     #  Export File to PDF
     plt2PDF(plt)
@@ -250,7 +256,7 @@ def SpeedUpEyes(userName,userRound):
             break
         distanceArray.append(tempDistacne)
     # Data for plotting
-    speedOfEyes = []  #  In mp/h
+    speedOfEyes = []
     pointPerMilliSecond = (timeOfRound / pointsCount)
     time = np.arange(0.0, timeOfRound, pointPerMilliSecond)
     for i in range(len(distanceArray)):
@@ -262,13 +268,16 @@ def SpeedUpEyes(userName,userRound):
     #  Get Max of speed
     maxSpeed = max(speedOfEyes).__round__(2)
     avgSpeed = GetAvgSpeedOfSpeedUpEyes(speedOfEyes=speedOfEyes).__round__(2)
-    plt.title('Speed of eye')
+    varOfSpeed = np.var(speedOfEyes).__round__(2)
+    plt.title('Speed of eye ' + userName)
     plt.xlabel('Time[Sec]')
-    plt.ylabel('Mp/h')
+    plt.ylabel('Km/h')
     str1 = "Max Speed is:"+maxSpeed.__str__()
     str2 = "Avg Speed is:"+avgSpeed.__str__()
-    plt.text(-2, 500, str1)
-    plt.text(-1.9, 520, str2)
+    str3 = "Variance speed is:"+varOfSpeed.__str__()
+    plt.text(80, 80, str1, fontsize=14)
+    plt.text(80, 150, str2, fontsize=14)
+    plt.text(80, 220, str3, fontsize=14)
     plt.plot(time, speedOfEyes, linestyle='solid', color='blue')
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
@@ -350,7 +359,22 @@ def plt2PDF(fig):
     except:
         print('Error please close the Testplot.pdf and try again')
     return
+def plt2PDFPie(fig):
+    try:
+        fig.savefig("testPlotPie.pdf", bbox_inches='tight')
+    except:
+        print('Error please close the Testplot.pdf and try again')
+    return
+def plt2PDFBar(fig):
+    try:
+        fig.savefig("testPlotBarChar.pdf", bbox_inches='tight')
+    except:
+        print('Error please close the Testplot.pdf and try again')
+    return
 def GetAvgSpeedOfSpeedUpEyes(speedOfEyes):
     return sum(speedOfEyes) / len(speedOfEyes)
+def GetMaxIndices(array):
+    indicesArray = np.argpartition(array, -5)[-5:]
+    indicesArray = np.sort(indicesArray)
+    return indicesArray
 Main()
-#Yaniv Change

@@ -127,7 +127,6 @@ def GetCoordinateByRoundNumber(username, roundNumber):
     for line in f:
         tempLine = line.split()
         timeTemp = tempLine[2]
-        #  print(line)
         timeTemp = datetime.strptime(timeTemp, '%H:%M:%S').time()
         if (timeTemp >= roundStartTime and timeTemp <= roundEndTime):
             xCor.append(tempLine[0])

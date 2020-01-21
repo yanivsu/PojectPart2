@@ -56,7 +56,7 @@ def GetUserID(textBox,loginFrame):
         WelcomePage(userType,prevFrame)
 def getSelectedGraph(graphSelection,username,userRound,dominateFlag,analysisFlag):
     if(graphSelection=="Heat map"):
-        graph.HeatMapFunction(username,userRound,dominateFlag,analysisFlag)
+        graph.HeatMapFunction(username, userRound, dominateFlag, analysisFlag)
     if (graphSelection == "Eye movment speed"):
         graph.SpeedUpEyes(username,userRound)
         #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
