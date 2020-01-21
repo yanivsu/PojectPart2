@@ -142,7 +142,7 @@ def PointDrawing(userName, userRound, dominateFlag):
         CreateCardBoard(listOfCardByRound)
     if (dominateFlag == 1):
         print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
-        listOfCardByRound = db.DominatValue(userName, int(userRound))
+        listOfCardByRound = db.DominatValue(userName, int(userRound))[0]
         CreateDominantCardBoard(listOfCardByRound, userName, userRound)
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, userRound)
@@ -202,7 +202,7 @@ def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
       CreateCardBoard(listOfCardByRound)
     if dominateFlag == 1:
       print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
-      listOfCardByRound = db.DominatValue(username, int(roundNumber))
+      listOfCardByRound = db.DominatValue(username, int(roundNumber))[0]
       CreateDominantCardBoard(listOfCardByRound, username, int(roundNumber))
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(username, int(roundNumber))

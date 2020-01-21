@@ -208,7 +208,11 @@ def DominatValue(username, roundNumber):
     return GetdominantCardArray(dominantArray, cardsList, numberInArray, dominantFlag)
 def GetdominantCardArray(dominantArray, cardsList, numberInArray, dominatFlag):
     dominantCardArray = []
+    index=0
+    cardsIndexList=[]
     for card in cardsList:
         if(int(cardsList[card][dominatFlag]) == numberInArray):
             dominantCardArray.append(cardsList[card])
-    return dominantCardArray
+            cardsIndexList.append(index)
+        index=index+1
+    return dominantCardArray,cardsIndexList
