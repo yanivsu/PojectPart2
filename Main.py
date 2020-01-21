@@ -14,8 +14,8 @@ def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
-    db.DominatValue('Yaniv', 21)
-    # HeatMapFunction('user1', 7, 0, 0)
+    # db.DominatValue('Yaniv', 21)
+    HeatMapFunction('Gulkin', 12, 0, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing('user1', 7, 0)
     # durationTimeOnCard('user1', 7)
@@ -37,7 +37,6 @@ def getNMaxElements(durationTimeList, N):
 def durationTimeOnCard(userName, userRound):
     durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     maxNValues = []
-    print(durationTimeList)
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, int(userRound))
     xCor = listOfCoodinate[0]
     yCor = listOfCoodinate[1]
@@ -213,12 +212,13 @@ def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     for x in listOfCoodinate[0]:
         x = float(x)
         #  Calibrate the camera x axis for the image
-        x -= 50
+        x *= 1.5
+        x -= 340
         xCor.append(float(x))
     for y in listOfCoodinate[1]:
         y = float(y)
         #  Calibrate the camera y axis for the image
-        y -= 180
+        y -= 120
         yCor.append(float(y))
     plt.subplots(figsize=(12, 12))
     map_img = mpimg.imread('out.jpg')
