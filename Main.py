@@ -10,34 +10,41 @@ import matplotlib.image as mpimg
 from scipy.ndimage.filters import gaussian_filter
 import mongoDB as db
 import webbrowser
+
+
 def Main():
     print()
     # print(db.GetNumberOfRoundByUsername('mnb'))
     # print('Please enter your userName')
     # db.DominatValue('Yaniv', 21)
-    HeatMapFunction('Gulkin', 12, 0, 0)
+    # HeatMapFunction('Gulkin', 12, 0, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing('user1', 7, 0)
-    # durationTimeOnCard('user1', 7)
+    durationTimeOnCard('user1', 8)
     # SpeedUpEyes('user4', 7)
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
     # CreateDominantCardBoard()
+
+
 # MyPlot function helps to maps all the point into gaussian numbers
 def getNMaxElements(durationTimeList, N):
-     final_list = []
-     for i in range(0, N):
-         max1 = 0
-         for j in range(len(durationTimeList)):
+    final_list = []
+    for i in range(0, N):
+        max1 = 0
+        for j in range(len(durationTimeList)):
             if durationTimeList[j] > max1:
-             max1 = durationTimeList[j]
-         durationTimeList.remove(max1)
-         final_list.append(max1)
-     return final_list
+                max1 = durationTimeList[j]
+        durationTimeList.remove(max1)
+        final_list.append(max1)
+    return final_list
+
+
 def durationTimeOnCard(userName, userRound):
     durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     maxNValues = []
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, int(userRound))
+    cardIndexList = db.DominatValue(userName, int(userRound))[1]
     xCor = listOfCoodinate[0]
     yCor = listOfCoodinate[1]
     for i in range(len(xCor)):
@@ -45,14 +52,23 @@ def durationTimeOnCard(userName, userRound):
     for i in range(len(yCor)):
         yCor[i] = float(yCor[i])
     roundTime = db.GetTimeDeatilsPerRound(userName, userRound)
-    durationTimeList = getEyesOnCardsData(xCor, yCor, roundTime[1])
+    durationTimeList = getEyesOnCardsData(xCor, yCor, roundTime[1], cardIndexList)
     # maxNValues = getNMaxElements(durationTimeList, 5)
-    maxNValues = GetMaxIndices(durationTimeList)
-    createBarChart(maxNValues, durationTimeList, roundTime[1], userName)
-    createPieChart(maxNValues, durationTimeList, roundTime[1], userName)
+    print()
+    maxNValues = GetMaxIndices(durationTimeList[0])
+
+    createDurationBarChart(maxNValues, durationTimeList[0], roundTime[1], userName)
+    createLookAtCardBarChart(maxNValues, durationTimeList[1], roundTime[1], userName)
+    #createAverageBarChart(maxNValues, durationTimeList[2], roundTime[1], userName)
+    createPieChart(maxNValues, durationTimeList[0], roundTime[1], userName)
+
+
+
 def getAnalysis(userName, roundNumber, analysisFlag):
     print()
     durationTimeOnCard()
+
+
 def createPieChart(maxNValues, durationTimeList, roundTime, userName):
     names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
     scores = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
@@ -63,73 +79,135 @@ def createPieChart(maxNValues, durationTimeList, roundTime, userName):
     plt2PDFPie(plt)
     webbrowser.open_new(r'testPlotPie.pdf')
     plt.show()
-def createBarChart(maxNValues, durationTimeList, roundTime, userName):
+
+
+def createAverageBarChart(maxNValues, durationTimeList, roundTime, userName):
+    objects = ('1', '2', '3', '4',
+               '5', '6', '7', '8',
+               '9', '10', '11', '12',)  # X cor
+    y_pos = np.arange(len(objects))
+    performance = durationTimeList  # Y cor
+    plt.bar(y_pos, performance, align='center', alpha=0.5)
+    plt.xticks(y_pos, objects)
+    plt.title("Gaze duration on cards")
+    plt.xlabel("Cards")
+    plt.ylabel("Time(sec)")
+    plt.title('Bar Char ' + userName)
+    plt2PDFBar(plt, "AVG")
+    webbrowser.open_new(r'Average eye duration on card.pdf')
+    plt.show()
+
+
+def createLookAtCardBarChart(maxNValues, durationTimeList, roundTime, userName):
+    objects = ('1', '2', '3', '4',
+               '5', '6', '7', '8',
+               '9', '10', '11', '12',)  # X cor
+    y_pos = np.arange(len(objects))
+    performance = durationTimeList  # Y cor
+    plt.bar(y_pos, performance, align='center', alpha=0.5)
+    plt.xticks(y_pos, objects)
+    plt.title("Gaze duration on cards")
+    plt.xlabel("Cards")
+    plt.ylabel("Time(sec)")
+    plt.title('Bar Char ' + userName)
+    plt2PDFBar(plt, "LOOK")
+    webbrowser.open_new(r'Number of time on card.pdf')
+    plt.show()
+
+def createDurationBarChart(maxNValues, durationTimeList, roundTime, userName):
     fig = plt.figure(figsize=(7, 5))
     names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
     scores = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
               durationTimeList[maxNValues[3]], durationTimeList[maxNValues[4]]]
     position = [0, 1, 2, 3, 4]
     plt.grid()
-    plt.ylim(0, roundTime)
+    plt.ylim(0, sum(maxNValues))
     plt.xticks(position, names)
     plt.bar(position, scores, width=0.3)
     plt.title("Gaze duration on cards")
-    plt.xlabel("Cards")
+    plt.xlabel("Cards number")
     plt.ylabel("Time(sec)")
     plt.title('Bar Char ' + userName)
-    plt2PDFBar(plt)
-    webbrowser.open_new(r'testPlotBarChar.pdf')
+    plt2PDFBar(plt, "DUR")
+    webbrowser.open_new(r'Duration on card.pdf')
     plt.show()
-def getEyesOnCardsData(xCor, yCor, roundTime):
-    durationTimeList=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+
+def getEyesOnCardsData(xCor, yCor, roundTime, cardIndexList):
     deltaTime = (roundTime / len(xCor))
+    durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    lookAtCardCounter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    avgTimeOnCard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
     for i in range(len(xCor)):
+        xCor[i] *= 1.5
+        xCor[i] -= 340
+        yCor[i] -= 120
         # ---------------- FIRST ROW ----------------#
         ####### Card Number 1 #######
         if (xCor[i] > 400.0 and xCor[i] < 760.0 and yCor[i] > 410.0 and yCor[i] < 530.0):
             durationTimeList[0] = durationTimeList[0] + deltaTime
+            lookAtCardCounter[0] = lookAtCardCounter[0] + 1
             ####### Card Number 2 #######
         if (xCor[i] > 860.0 and xCor[i] < 1200.0 and yCor[i] > 410.0 and yCor[i] < 530.0):
             durationTimeList[1] = durationTimeList[1] + deltaTime
+            lookAtCardCounter[1] = lookAtCardCounter[1] + 1
         ####### Card Number 3 #######
         if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 410.0 and yCor[i] < 530.0):
             durationTimeList[2] = durationTimeList[2] + deltaTime
+            lookAtCardCounter[2] = lookAtCardCounter[2] + 1
         # ---------------- SECOND ROW ----------------#
         ####### Card Number 4 #######
         if (xCor[i] > 400.0 and xCor[i] < 750.0 and yCor[i] > 560.0 and yCor[i] < 660.0):
             durationTimeList[3] = durationTimeList[3] + deltaTime
+            lookAtCardCounter[3] = lookAtCardCounter[3] + 1
             ####### Card Number 5 #######
         if (xCor[i] > 875.0 and xCor[i] < 1200.0 and yCor[i] > 560.0 and yCor[i] < 660.0):
             durationTimeList[4] = durationTimeList[4] + deltaTime
+            lookAtCardCounter[4] = lookAtCardCounter[4] + 1
             ####### Card Number 6 #######
         if (xCor[i] > 1300.0 and xCor[i] < 1600.0 and yCor[i] > 560.0 and yCor[i] < 660.0):
             durationTimeList[5] = durationTimeList[5] + deltaTime
+            lookAtCardCounter[5] = lookAtCardCounter[5] + 1
         # ---------------- THIRD ROW ----------------#
         ####### Card Number 7 #######
         if (xCor[i] > 400.0 and xCor[i] < 750 and yCor[i] > 670.0 and yCor[i] < 770.0):
             durationTimeList[6] = durationTimeList[6] + deltaTime
+            lookAtCardCounter[6] = lookAtCardCounter[6] + 1
             ####### Card Number 8 #######
         if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 670.0 and yCor[i] < 770.0):
             durationTimeList[7] = durationTimeList[7] + deltaTime
+            lookAtCardCounter[7] = lookAtCardCounter[7] + 1
             ####### Card Number 9 #######
         if (xCor[i] > 1300 and xCor[i] < 1600 and yCor[i] > 670.0 and yCor[i] < 770.0):
             durationTimeList[8] = durationTimeList[8] + deltaTime
+            lookAtCardCounter[8] = lookAtCardCounter[8] + 1
         # ---------------- FOURTH ROW ----------------#
         ####### Card Number 10 #######
         if (xCor[i] > 425 and xCor[i] < 725 and yCor[i] > 780 and yCor[i] < 880):
             durationTimeList[9] = durationTimeList[9] + deltaTime
+            lookAtCardCounter[9] = lookAtCardCounter[9] + 1
             ####### Card Number 11 #######
         if (xCor[i] > 900 and xCor[i] < 1200 and yCor[i] > 780 and yCor[i] < 880):
             durationTimeList[10] = durationTimeList[10] + deltaTime
+            lookAtCardCounter[10] = lookAtCardCounter[10] + 1
             ####### Card Number 12 #######
         if (xCor[i] > 1325 and xCor[i] < 1625 and yCor[i] > 780 and yCor[i] < 880):
             durationTimeList[11] = durationTimeList[11] + deltaTime
-    return durationTimeList
+            lookAtCardCounter[11] = lookAtCardCounter[11] + 1
+    for counter in range(len(avgTimeOnCard)):
+        avgTimeOnCard[counter] = (lookAtCardCounter[counter] * deltaTime) / sum(durationTimeList)
+    print()
+    return durationTimeList, lookAtCardCounter, avgTimeOnCard
+
+
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
     heatmap = gaussian_filter(heatmap, sigma=s)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
+
+
 def PointDrawing(userName, userRound, dominateFlag):
     removeFlag = 0
     saveLastPointX = 0
@@ -164,7 +242,7 @@ def PointDrawing(userName, userRound, dominateFlag):
         y = float(y)
         if y > 900 or y < 300:
             yCor.append(-190.0)
-        elif y > saveLastPointY or y < saveLastPointY :
+        elif y > saveLastPointY or y < saveLastPointY:
             saveLastPointX = y
             yCor.append(y - 150)
         else:
@@ -194,16 +272,19 @@ def PointDrawing(userName, userRound, dominateFlag):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
+
+
 def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     #  Connect to DB and create a Board
     if dominateFlag == 0:
-      print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
-      listOfCardByRound = db.GetBoard(username, int(roundNumber))
-      CreateCardBoard(listOfCardByRound)
+        print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
+        listOfCardByRound = db.GetBoard(username, int(roundNumber))
+        CreateCardBoard(listOfCardByRound)
     if dominateFlag == 1:
-      print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
-      listOfCardByRound = db.DominatValue(username, int(roundNumber))[0]
-      CreateDominantCardBoard(listOfCardByRound, username, int(roundNumber))
+        print("DOMINATE BOARD HAS BEEN  SELECTED TO BE CREATED")
+        listOfCardByRound = db.DominatValue(username, int(roundNumber))[0]
+        cardIndexList = db.DominatValue(username, int(roundNumber))[1]
+        CreateDominantCardBoard(listOfCardByRound, username, int(roundNumber))
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(username, int(roundNumber))
     xCor = []
@@ -232,9 +313,11 @@ def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-def SpeedUpEyes(userName,userRound):
+
+
+def SpeedUpEyes(userName, userRound):
     print("STARTING TO CREATE SPEED EYE GRAPH")
-    listOfCoodinate = db.GetCoordinateByRoundNumber(userName,userRound)
+    listOfCoodinate = db.GetCoordinateByRoundNumber(userName, userRound)
     xCor = []
     yCor = []
     #  Convert String point to float point
@@ -245,14 +328,14 @@ def SpeedUpEyes(userName,userRound):
     timeOfRound = db.GetTimeDeatilsPerRound(userName, userRound)[1]
     pointsCount = xCor.__len__()
     deltaTimePerPoint = pointsCount / timeOfRound
-    #Calcuate Distance
+    # Calcuate Distance
     distanceArray = []
     for i in range(len(xCor) - 1):
         firstPoint = [xCor[i], yCor[i]]
-        secondPoint = [xCor[i+1], yCor[i+1]]
+        secondPoint = [xCor[i + 1], yCor[i + 1]]
         tempDistacne = math.sqrt(math.pow((firstPoint[0] - secondPoint[0]), 2) +
                                  math.pow((firstPoint[1] - secondPoint[1]), 2))
-        if (pointsCount <= 0) :
+        if (pointsCount <= 0):
             break
         distanceArray.append(tempDistacne)
     # Data for plotting
@@ -260,7 +343,7 @@ def SpeedUpEyes(userName,userRound):
     pointPerMilliSecond = (timeOfRound / pointsCount)
     time = np.arange(0.0, timeOfRound, pointPerMilliSecond)
     for i in range(len(distanceArray)):
-        speedOfEyes.append(float(distanceArray[i] / pointPerMilliSecond)*0.01)
+        speedOfEyes.append(float(distanceArray[i] / pointPerMilliSecond) * 0.01)
     fig, ax = plt.subplots()
     #  check the size of time
     if time.__len__() > speedOfEyes.__len__():
@@ -272,9 +355,9 @@ def SpeedUpEyes(userName,userRound):
     plt.title('Speed of eye ' + userName)
     plt.xlabel('Time[Sec]')
     plt.ylabel('Km/h')
-    str1 = "Max Speed is:"+maxSpeed.__str__()
-    str2 = "Avg Speed is:"+avgSpeed.__str__()
-    str3 = "Variance speed is:"+varOfSpeed.__str__()
+    str1 = "Max Speed is:" + maxSpeed.__str__()
+    str2 = "Avg Speed is:" + avgSpeed.__str__()
+    str3 = "Variance speed is:" + varOfSpeed.__str__()
     plt.text(80, 80, str1, fontsize=14)
     plt.text(80, 150, str2, fontsize=14)
     plt.text(80, 220, str3, fontsize=14)
@@ -282,12 +365,14 @@ def SpeedUpEyes(userName,userRound):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
+
+
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
     path = 'allcards/'  # get the path of images
     imageList = []
     for i in range(12):
-        imageList.append(listOfImage[str(i)]+'.png')
+        imageList.append(listOfImage[str(i)] + '.png')
     pdf = FPDF('L', 'mm', 'A4')  # create an A4-size pdf document
     pdf.add_page()
     x, y, w, h = 0, 52.07, 47.6, 25.7
@@ -301,6 +386,8 @@ def CreateCardBoard(listOfImage):
         pdf.image(path + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The board creation is in finished ...')
+
+
 def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
     #  The GaussianBlur() uses the Gaussian kernel.
     #  The height and width of the kernel should be a positive and an odd number.
@@ -317,19 +404,19 @@ def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
     imageList = []
     #  Get the card list of dominant value from board
     for i in range(listOfCardByRound.__len__()):
-        imageListHighlight.append(listOfCardByRound[i]+'.png')
+        imageListHighlight.append(listOfCardByRound[i] + '.png')
     #  Get the all board list
     listOfCardByRound = db.GetBoard(username, roundNumber)
     for i in range(12):
         imageList.append(listOfCardByRound[str(i)] + '.png')
-    #Create New Board with highlight cards
+    # Create New Board with highlight cards
     for i in range(12):
         for j in range(imageListHighlight.__len__()):
             if imageList[i] == imageListHighlight[j]:
-             img = cv2.imread(path + imageListHighlight[j])
-             cv2.imwrite(tempPath + imageListHighlight[j], img)
-             creationFlag = True
-             break
+                img = cv2.imread(path + imageListHighlight[j])
+                cv2.imwrite(tempPath + imageListHighlight[j], img)
+                creationFlag = True
+                break
         if creationFlag == False:
             img = cv2.imread(path + imageList[i])
             blur_image = cv2.GaussianBlur(img, (81, 81), 0)
@@ -347,34 +434,60 @@ def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
         pdf.image(tempPath + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The dominant board creation is in finished ...')
+
+
 def PDF2Image():
     # To user this function u must install Popper and put the path into System Path
     # You can use https://stackoverflow.com/questions/18381713/how-to-install-poppler-on-windows
     images = convert_from_path('tempCardBoard.pdf', 500)
     for page in images:
         page.save('out.jpg', 'JPEG')
+
+
 def plt2PDF(fig):
     try:
         fig.savefig("testPlot.pdf", bbox_inches='tight')
     except:
         print('Error please close the Testplot.pdf and try again')
     return
+
+
 def plt2PDFPie(fig):
     try:
         fig.savefig("testPlotPie.pdf", bbox_inches='tight')
     except:
         print('Error please close the Testplot.pdf and try again')
     return
-def plt2PDFBar(fig):
-    try:
-        fig.savefig("testPlotBarChar.pdf", bbox_inches='tight')
-    except:
-        print('Error please close the Testplot.pdf and try again')
+
+
+def plt2PDFBar(fig, type):
+    if type == "DUR":
+        try:
+            fig.savefig("Duration on card.pdf", bbox_inches='tight')
+        except:
+            print('Error please close the Testplot.pdf and try again')
+    if type == "LOOK":
+        try:
+            fig.savefig("Number of time on card.pdf", bbox_inches='tight')
+        except:
+            print('Error please close the Testplot.pdf and try again')
+    if type == "AVG":
+        try:
+            fig.savefig("Average eye duration on card.pdf", bbox_inches='tight')
+        except:
+            print('Error please close the Testplot.pdf and try again')
+
     return
+
+
 def GetAvgSpeedOfSpeedUpEyes(speedOfEyes):
     return sum(speedOfEyes) / len(speedOfEyes)
+
+
 def GetMaxIndices(array):
     indicesArray = np.argpartition(array, -5)[-5:]
     indicesArray = np.sort(indicesArray)
     return indicesArray
+
+
 Main()
