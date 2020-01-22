@@ -25,8 +25,6 @@ def Main():
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
     # CreateDominantCardBoard()
-
-
 # MyPlot function helps to maps all the point into gaussian numbers
 def getNMaxElements(durationTimeList, N):
     final_list = []
@@ -38,8 +36,6 @@ def getNMaxElements(durationTimeList, N):
         durationTimeList.remove(max1)
         final_list.append(max1)
     return final_list
-
-
 def durationTimeOnCard(userName, userRound):
     durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     maxNValues = []
@@ -61,14 +57,9 @@ def durationTimeOnCard(userName, userRound):
     createLookAtCardBarChart(maxNValues, durationTimeList[1], roundTime[1], userName)
     #createAverageBarChart(maxNValues, durationTimeList[2], roundTime[1], userName)
     createPieChart(maxNValues, durationTimeList[0], roundTime[1], userName)
-
-
-
 def getAnalysis(userName, roundNumber, analysisFlag):
     print()
     durationTimeOnCard()
-
-
 def createPieChart(maxNValues, durationTimeList, roundTime, userName):
     names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
     scores = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
@@ -79,8 +70,6 @@ def createPieChart(maxNValues, durationTimeList, roundTime, userName):
     plt2PDFPie(plt)
     webbrowser.open_new(r'testPlotPie.pdf')
     plt.show()
-
-
 def createAverageBarChart(maxNValues, durationTimeList, roundTime, userName):
     objects = ('1', '2', '3', '4',
                '5', '6', '7', '8',
@@ -96,8 +85,6 @@ def createAverageBarChart(maxNValues, durationTimeList, roundTime, userName):
     plt2PDFBar(plt, "AVG")
     webbrowser.open_new(r'Average eye duration on card.pdf')
     plt.show()
-
-
 def createLookAtCardBarChart(maxNValues, durationTimeList, roundTime, userName):
     objects = ('1', '2', '3', '4',
                '5', '6', '7', '8',
@@ -113,7 +100,6 @@ def createLookAtCardBarChart(maxNValues, durationTimeList, roundTime, userName):
     plt2PDFBar(plt, "LOOK")
     webbrowser.open_new(r'Number of time on card.pdf')
     plt.show()
-
 def createDurationBarChart(maxNValues, durationTimeList, roundTime, userName):
     fig = plt.figure(figsize=(7, 5))
     names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
@@ -131,8 +117,6 @@ def createDurationBarChart(maxNValues, durationTimeList, roundTime, userName):
     plt2PDFBar(plt, "DUR")
     webbrowser.open_new(r'Duration on card.pdf')
     plt.show()
-
-
 def getEyesOnCardsData(xCor, yCor, roundTime, cardIndexList):
     deltaTime = (roundTime / len(xCor))
     durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -199,15 +183,11 @@ def getEyesOnCardsData(xCor, yCor, roundTime, cardIndexList):
         avgTimeOnCard[counter] = (lookAtCardCounter[counter] * deltaTime) / sum(durationTimeList)
     print()
     return durationTimeList, lookAtCardCounter, avgTimeOnCard
-
-
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
     heatmap = gaussian_filter(heatmap, sigma=s)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
-
-
 def PointDrawing(userName, userRound, dominateFlag):
     removeFlag = 0
     saveLastPointX = 0
@@ -272,8 +252,6 @@ def PointDrawing(userName, userRound, dominateFlag):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-
-
 def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     #  Connect to DB and create a Board
     if dominateFlag == 0:
@@ -313,8 +291,6 @@ def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-
-
 def SpeedUpEyes(userName, userRound):
     print("STARTING TO CREATE SPEED EYE GRAPH")
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, userRound)
@@ -365,8 +341,6 @@ def SpeedUpEyes(userName, userRound):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-
-
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
     path = 'allcards/'  # get the path of images
@@ -386,8 +360,6 @@ def CreateCardBoard(listOfImage):
         pdf.image(path + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The board creation is in finished ...')
-
-
 def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
     #  The GaussianBlur() uses the Gaussian kernel.
     #  The height and width of the kernel should be a positive and an odd number.
@@ -434,32 +406,24 @@ def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
         pdf.image(tempPath + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The dominant board creation is in finished ...')
-
-
 def PDF2Image():
     # To user this function u must install Popper and put the path into System Path
     # You can use https://stackoverflow.com/questions/18381713/how-to-install-poppler-on-windows
     images = convert_from_path('tempCardBoard.pdf', 500)
     for page in images:
         page.save('out.jpg', 'JPEG')
-
-
 def plt2PDF(fig):
     try:
         fig.savefig("testPlot.pdf", bbox_inches='tight')
     except:
         print('Error please close the Testplot.pdf and try again')
     return
-
-
 def plt2PDFPie(fig):
     try:
         fig.savefig("testPlotPie.pdf", bbox_inches='tight')
     except:
         print('Error please close the Testplot.pdf and try again')
     return
-
-
 def plt2PDFBar(fig, type):
     if type == "DUR":
         try:
@@ -478,16 +442,10 @@ def plt2PDFBar(fig, type):
             print('Error please close the Testplot.pdf and try again')
 
     return
-
-
 def GetAvgSpeedOfSpeedUpEyes(speedOfEyes):
     return sum(speedOfEyes) / len(speedOfEyes)
-
-
 def GetMaxIndices(array):
     indicesArray = np.argpartition(array, -5)[-5:]
     indicesArray = np.sort(indicesArray)
     return indicesArray
-
-
 Main()
