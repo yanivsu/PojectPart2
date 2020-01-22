@@ -97,7 +97,6 @@ def createAverageBarChart(maxNValues, durationTimeList, roundTime, userName):
     webbrowser.open_new(r'Average eye duration on card.pdf')
     plt.show()
 
-
 def createLookAtCardBarChart(maxNValues, durationTimeList, roundTime, userName):
     objects = ('1', '2', '3', '4',
                '5', '6', '7', '8',
