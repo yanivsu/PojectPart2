@@ -1,7 +1,6 @@
 from scipy.sparse import csr_matrix
 import numpy as np
 import random
-#שדלךגצשדךצגךשדצדשךגצךשד#
 
 class KMedoids:
     def __init__(self, n_cluster=2, max_iter=10, tol=0.1, start_prob=0.8, end_prob=0.99):
