@@ -20,12 +20,10 @@ def Main():
     # HeatMapFunction('Gulkin', 12, 0, 0)
     # print(db.GetCoordinateByRoundNumber('Gulkin', 1))
     # PointDrawing('user1', 7, 0)
-    durationTimeOnCard('user1', 8)
     # SpeedUpEyes('user4', 7)
     # CreateCardBoard(db.GetBoard('mnb', 232))
     # PDF2Image()
     # CreateDominantCardBoard()
-
 
 # MyPlot function helps to maps all the point into gaussian numbers
 def getNMaxElements(durationTimeList, N):
@@ -39,12 +37,9 @@ def getNMaxElements(durationTimeList, N):
         final_list.append(max1)
     return final_list
 
-
-def durationTimeOnCard(userName, userRound):
-    durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    maxNValues = []
+def GetHeatMapFeatures(userName, userRound,cardIndexList,domFlag):
+    durationTimeList = []
     listOfCoodinate = db.GetCoordinateByRoundNumber(userName, int(userRound))
-    cardIndexList = db.DominatValue(userName, int(userRound))[1]
     xCor = listOfCoodinate[0]
     yCor = listOfCoodinate[1]
     for i in range(len(xCor)):
@@ -52,51 +47,57 @@ def durationTimeOnCard(userName, userRound):
     for i in range(len(yCor)):
         yCor[i] = float(yCor[i])
     roundTime = db.GetTimeDeatilsPerRound(userName, userRound)
-    durationTimeList = getEyesOnCardsData(xCor, yCor, roundTime[1], cardIndexList)
-    # maxNValues = getNMaxElements(durationTimeList, 5)
-    print()
-    maxNValues = GetMaxIndices(durationTimeList[0])
+    durationTimeList = getEyesOnCardsData(xCor, yCor, roundTime[1])
+    if domFlag == 1:
+     domList0=[]
+     domList1=[]
+     domList2=[]
+     temp=[]
+     for i in range(len(cardIndexList)):
+          temp = durationTimeList[0]
+          domList0.append(temp[cardIndexList[i]-1])
+          temp = durationTimeList[1]
+          domList1.append(temp[cardIndexList[i]-1])
+          temp = durationTimeList[2]
+          domList2.append(temp[cardIndexList[i]-1])
+     maxNValues = GetMaxIndices(domList0, domFlag)
+     maxNValues2 = GetMaxIndices(domList2, domFlag)
+     createDomDurationBarChart(maxNValues, domList0, roundTime[1], userName,cardIndexList)
+     createDomLookAtCardBarChart(maxNValues, domList1, roundTime[1], userName, cardIndexList)
+     createDomAveragePieChart(maxNValues2, domList2, roundTime[1], userName, durationTimeList[3], cardIndexList)
+    if domFlag==0:
+     # maxNValues = getNMaxElements(durationTimeList, 5)
+     maxNValues = GetMaxIndices(durationTimeList[0],domFlag)
+     maxNValues2=GetMaxIndices(durationTimeList[2],domFlag)
+     createDurationBarChart(maxNValues, durationTimeList[0], roundTime[1], userName)
+     createLookAtCardBarChart(maxNValues, durationTimeList[1], roundTime[1], userName)
+     createAveragePieChart(maxNValues2, durationTimeList[2], roundTime[1], userName,durationTimeList[3])
 
-    createDurationBarChart(maxNValues, durationTimeList[0], roundTime[1], userName)
-    createLookAtCardBarChart(maxNValues, durationTimeList[1], roundTime[1], userName)
-    #createAverageBarChart(maxNValues, durationTimeList[2], roundTime[1], userName)
-    createPieChart(maxNValues, durationTimeList[0], roundTime[1], userName)
-
-
-
-def getAnalysis(userName, roundNumber, analysisFlag):
-    print()
-    durationTimeOnCard()
-
-
-def createPieChart(maxNValues, durationTimeList, roundTime, userName):
-    names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
-    scores = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
-              durationTimeList[maxNValues[3]], durationTimeList[maxNValues[4]]]
-    plt.axis("equal")
-    plt.pie(scores, labels=names, autopct="%0.2f%%")
-    plt.title('PieChart ' + userName)
-    plt2PDFPie(plt)
-    webbrowser.open_new(r'testPlotPie.pdf')
-    plt.show()
-
-
-def createAverageBarChart(maxNValues, durationTimeList, roundTime, userName):
-    objects = ('1', '2', '3', '4',
-               '5', '6', '7', '8',
-               '9', '10', '11', '12',)  # X cor
+def createAveragePieChart(maxNValues, durationTimeList, roundTime, userName,varAvg):
+    score = []
+    cards = []
+    objects = [maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1] # X cor
     y_pos = np.arange(len(objects))
-    performance = durationTimeList  # Y cor
-    plt.bar(y_pos, performance, align='center', alpha=0.5)
-    plt.xticks(y_pos, objects)
-    plt.title("Gaze duration on cards")
-    plt.xlabel("Cards")
-    plt.ylabel("Time(sec)")
-    plt.title('Bar Char ' + userName)
-    plt2PDFBar(plt, "AVG")
-    webbrowser.open_new(r'Average eye duration on card.pdf')
-    plt.show()
+    performance = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
+              durationTimeList[maxNValues[3]], durationTimeList[maxNValues[4]]]
 
+    for i in range(len(maxNValues)):
+        if performance[i] > 0.01:
+            score.append(performance[i])
+            cards.append(maxNValues[i])
+    totalVal=sum(score)
+    returnValue=CheckIfNot100Presents(totalVal)
+    if returnValue[0]==True:
+        cards.append("REST OF CARDS")
+        score.append(returnValue[1])
+    plt.axis("equal")
+    str1 = "Variance speed is:" + varAvg
+    #plt.text(80, 80, str1, fontsize=14)
+    plt.pie(score, labels=cards, autopct="%0.2f%%")
+    plt.title(userName+ " - gaze distribution by percentage")
+    plt2PDFBar(plt, "AVG",userName)
+    webbrowser.open_new(r'AVG_'+userName+'.pdf')
+    plt.show()
 
 def createLookAtCardBarChart(maxNValues, durationTimeList, roundTime, userName):
     objects = ('1', '2', '3', '4',
@@ -104,18 +105,83 @@ def createLookAtCardBarChart(maxNValues, durationTimeList, roundTime, userName):
                '9', '10', '11', '12',)  # X cor
     y_pos = np.arange(len(objects))
     performance = durationTimeList  # Y cor
+    plt.grid()
     plt.bar(y_pos, performance, align='center', alpha=0.5)
     plt.xticks(y_pos, objects)
-    plt.title("Gaze duration on cards")
+    plt.title(userName+" - look at card counter")
     plt.xlabel("Cards")
+    plt.ylabel("Counter")
+    plt2PDFBar(plt, "LOOK",userName)
+    webbrowser.open_new(r'LOOK_' + userName + '.pdf')
+    plt.show()
+
+def createDomDurationBarChart(maxNValues, durationTimeList, roundTime, userName,cardIndexList):
+    names = []
+    scores = []
+    position = []
+    for i in range(len(maxNValues)):
+        names.append(cardIndexList[i])
+        position.append(i)
+        scores.append(durationTimeList[maxNValues[i]])
+    plt.grid()
+    plt.ylim(0, sum(durationTimeList))
+    plt.xticks(position, names)
+    plt.bar(position, scores, width=0.3)
+    plt.title(userName + " - gaze duration on  dominant cards by sec")
+    plt.xlabel("Cards number")
     plt.ylabel("Time(sec)")
-    plt.title('Bar Char ' + userName)
-    plt2PDFBar(plt, "LOOK")
-    webbrowser.open_new(r'Number of time on card.pdf')
+    plt2PDFBar(plt, "DOM DUR",userName)
+    webbrowser.open_new(r'DOM DUR_' + userName + '.pdf')
+    plt.show()
+
+def createDomLookAtCardBarChart(maxNValues, durationTimeList, roundTime, userName,cardIndexList):
+    names = []
+    scores = []
+    position = []
+    for i in range(len(maxNValues)):
+        names.append(cardIndexList[i])
+        position.append(i)
+        scores.append(durationTimeList[maxNValues[i]])
+    plt.grid()
+    plt.ylim(0, sum(durationTimeList))
+    plt.xticks(position, names)
+    plt.bar(position, scores, width=0.3)
+    plt.title(userName + " - look at dominant card counter")
+    plt.xlabel("Cards")
+    plt.ylabel("Counter")
+    plt2PDFBar(plt, "DOM LOOK",userName)
+    webbrowser.open_new(r'DOM LOOK_' + userName + '.pdf')
+    plt.show()
+    #########################maxNValues2, domList2, roundTime[1], userName, durationTimeList[3], cardIndexList
+def createDomAveragePieChart(maxNValues, durationTimeList, roundTime, userName,varAvg,cardIndexList):
+    objects = []
+    score = []
+    cards = []
+    performance = []
+    for i in range(len(maxNValues)):
+        objects.append(cardIndexList[i])
+        performance.append(durationTimeList[i])
+    for i in range(len(maxNValues)):
+        if performance[i] > 0.01:
+            score.append(performance[i])
+            cards.append(cardIndexList[i])
+
+    totalVal = sum(score)
+    returnValue = CheckIfNot100Presents(totalVal)
+    if returnValue[0] == True:
+        cards.append("NONE DOMINANTE CARDS")
+        score.append(returnValue[1])
+
+    plt.axis("equal")
+    #str1 = "Variance speed is:" + varAvg
+    # plt.text(80, 80, str1, fontsize=14)
+    plt.pie(score, labels=cards, autopct="%0.2f%%")
+    plt.title(userName + " - gaze distribution on dominant cards by percentage")
+    plt2PDFBar(plt, "DOM AVG",userName)
+    webbrowser.open_new(r'DOM AVG_' + userName + '.pdf')
     plt.show()
 
 def createDurationBarChart(maxNValues, durationTimeList, roundTime, userName):
-    fig = plt.figure(figsize=(7, 5))
     names = (maxNValues[0] + 1, maxNValues[1] + 1, maxNValues[2] + 1, maxNValues[3] + 1, maxNValues[4] + 1)
     scores = [durationTimeList[maxNValues[0]], durationTimeList[maxNValues[1]], durationTimeList[maxNValues[2]],
               durationTimeList[maxNValues[3]], durationTimeList[maxNValues[4]]]
@@ -124,16 +190,20 @@ def createDurationBarChart(maxNValues, durationTimeList, roundTime, userName):
     plt.ylim(0, sum(maxNValues))
     plt.xticks(position, names)
     plt.bar(position, scores, width=0.3)
-    plt.title("Gaze duration on cards")
+    plt.title(userName + " - gaze duration on cards by sec")
     plt.xlabel("Cards number")
     plt.ylabel("Time(sec)")
-    plt.title('Bar Char ' + userName)
-    plt2PDFBar(plt, "DUR")
-    webbrowser.open_new(r'Duration on card.pdf')
+    plt2PDFBar(plt, "DUR",userName)
+    webbrowser.open_new(r'DUR_' + userName + '.pdf')
     plt.show()
 
+def CheckIfNot100Presents(totalVal):
+    if totalVal<1:
+        diff=1-totalVal
+        flag=True
+    return flag,diff
 
-def getEyesOnCardsData(xCor, yCor, roundTime, cardIndexList):
+def getEyesOnCardsData(xCor, yCor, roundTime):
     deltaTime = (roundTime / len(xCor))
     durationTimeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     lookAtCardCounter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -197,16 +267,15 @@ def getEyesOnCardsData(xCor, yCor, roundTime, cardIndexList):
             lookAtCardCounter[11] = lookAtCardCounter[11] + 1
     for counter in range(len(avgTimeOnCard)):
         avgTimeOnCard[counter] = (lookAtCardCounter[counter] * deltaTime) / sum(durationTimeList)
-    print()
-    return durationTimeList, lookAtCardCounter, avgTimeOnCard
 
+    varAVG=np.var(avgTimeOnCard).__str__()
+    return durationTimeList, lookAtCardCounter, avgTimeOnCard,varAVG
 
 def myplot(x, y, s, bins=1000):
     heatmap, xedges, yedges = np.histogram2d(x, y, bins=bins)
     heatmap = gaussian_filter(heatmap, sigma=s)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     return heatmap.T, extent
-
 
 def PointDrawing(userName, userRound, dominateFlag):
     removeFlag = 0
@@ -273,9 +342,9 @@ def PointDrawing(userName, userRound, dominateFlag):
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
 
-
 def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     #  Connect to DB and create a Board
+    cardIndexList=[]
     if dominateFlag == 0:
         print("REGULAR BOARD HAS BEEN SELECTED TO BE CREATED")
         listOfCardByRound = db.GetBoard(username, int(roundNumber))
@@ -285,6 +354,8 @@ def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
         listOfCardByRound = db.DominatValue(username, int(roundNumber))[0]
         cardIndexList = db.DominatValue(username, int(roundNumber))[1]
         CreateDominantCardBoard(listOfCardByRound, username, int(roundNumber))
+
+    GetHeatMapFeatures(username, roundNumber,cardIndexList,dominateFlag)
     PDF2Image()
     listOfCoodinate = db.GetCoordinateByRoundNumber(username, int(roundNumber))
     xCor = []
@@ -313,7 +384,6 @@ def HeatMapFunction(username, roundNumber, dominateFlag, analysisFlag):
     plt2PDF(plt)
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
-
 
 def SpeedUpEyes(userName, userRound):
     print("STARTING TO CREATE SPEED EYE GRAPH")
@@ -366,7 +436,6 @@ def SpeedUpEyes(userName, userRound):
     webbrowser.open_new(r'testPlot.pdf')
     plt.show()
 
-
 def CreateCardBoard(listOfImage):
     print('The board creation is in process...')
     path = 'allcards/'  # get the path of images
@@ -386,7 +455,6 @@ def CreateCardBoard(listOfImage):
         pdf.image(path + image, x, y, w, h)
     pdf.output("tempCardBoard.pdf", "F")
     print('The board creation is in finished ...')
-
 
 def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
     #  The GaussianBlur() uses the Gaussian kernel.
@@ -435,14 +503,12 @@ def CreateDominantCardBoard(listOfCardByRound, username, roundNumber):
     pdf.output("tempCardBoard.pdf", "F")
     print('The dominant board creation is in finished ...')
 
-
 def PDF2Image():
     # To user this function u must install Popper and put the path into System Path
     # You can use https://stackoverflow.com/questions/18381713/how-to-install-poppler-on-windows
     images = convert_from_path('tempCardBoard.pdf', 500)
     for page in images:
         page.save('out.jpg', 'JPEG')
-
 
 def plt2PDF(fig):
     try:
@@ -451,7 +517,6 @@ def plt2PDF(fig):
         print('Error please close the Testplot.pdf and try again')
     return
 
-
 def plt2PDFPie(fig):
     try:
         fig.savefig("testPlotPie.pdf", bbox_inches='tight')
@@ -459,35 +524,48 @@ def plt2PDFPie(fig):
         print('Error please close the Testplot.pdf and try again')
     return
 
-
-def plt2PDFBar(fig, type):
+def plt2PDFBar(fig, type,userName):
     if type == "DUR":
         try:
-            fig.savefig("Duration on card.pdf", bbox_inches='tight')
+            fig.savefig(type+"_"+userName+".pdf", bbox_inches='tight')
         except:
             print('Error please close the Testplot.pdf and try again')
     if type == "LOOK":
         try:
-            fig.savefig("Number of time on card.pdf", bbox_inches='tight')
+            fig.savefig(type+"_"+userName+".pdf", bbox_inches='tight')
         except:
             print('Error please close the Testplot.pdf and try again')
     if type == "AVG":
         try:
-            fig.savefig("Average eye duration on card.pdf", bbox_inches='tight')
+            fig.savefig(type+"_"+userName+".pdf", bbox_inches='tight')
         except:
             print('Error please close the Testplot.pdf and try again')
-
+    if type == "DOM DUR":
+        try:
+            fig.savefig(type+"_"+userName+".pdf", bbox_inches='tight')
+        except:
+            print('Error please close the Testplot.pdf and try again')
+    if type == "DOM LOOK":
+        try:
+            fig.savefig(type+"_"+userName+".pdf", bbox_inches='tight')
+        except:
+            print('Error please close the Testplot.pdf and try again')
+    if type == "DOM AVG":
+        try:
+            fig.savefig(type+"_"+userName+".pdf", bbox_inches='tight')
+        except:
+            print('Error please close the Testplot.pdf and try again')
     return
-
 
 def GetAvgSpeedOfSpeedUpEyes(speedOfEyes):
     return sum(speedOfEyes) / len(speedOfEyes)
 
-
-def GetMaxIndices(array):
-    indicesArray = np.argpartition(array, -5)[-5:]
-    indicesArray = np.sort(indicesArray)
+def GetMaxIndices(array,domFlag):
+    if domFlag==0:
+        indicesArray = np.argpartition(array, -5)[-5:]
+        indicesArray = np.sort(indicesArray)
+    if domFlag==1:
+        indicesArray = np.argpartition(array, 0)[0:]
+        indicesArray = np.sort(indicesArray)
     return indicesArray
-
-
 Main()

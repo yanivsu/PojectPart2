@@ -96,7 +96,7 @@ def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
     checkBoxButton=Checkbutton(currentFrame,text="Show only dominate cards",variable=var)
     checkBoxButton.pack()
     checkBoxButton2=Checkbutton(currentFrame,text="Show analysis ",variable=var2)
-    checkBoxButton2.pack()
+    #checkBoxButton2.pack()
    #spaceLabel = Label(currentFrame, text="").pack()
     next=Button(currentFrame,text="Get graph",
                 command=lambda: CheckLecturerSelection(
@@ -118,34 +118,32 @@ def CreateViewFrame(prevFrame):
     forgetFrame.forget()
     viewFrame=Frame(loginScrren).pack()
     currentFrame=viewFrame
-    labelUserID = Label(viewFrame, bg="green", fg="White", text="HI ").pack()
+    spaceLabelgert = Label(viewFrame, text="").pack()
+    spaceLabelgert = Label(viewFrame, text="").pack()
+    labelUserID = Label(viewFrame, fg="black", text="Enter candidates name in order to review his results").pack()
     spaceLabelgert = Label(viewFrame, text="").pack()
     texbox = Text(viewFrame, height=2, width=11)
     texbox.pack()
-    spaceLabel = Label(text="").pack()
-    getIDButton = Button(viewFrame, height=1, width=10, text="GET DETAIELS",
-                         command=lambda: GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton))
+    spaceLabelgert = Label(viewFrame, text="").pack()
+    getIDButton = Button(viewFrame, height=1, width=10, text="Get details",
+                 command=lambda: GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton))
     getIDButton.pack()
-    spaceLabel = Label(text="").pack()
-    #signOutButton = Button(viewFrame, height=1, width=10, text="Sign-out",).pack()
+
 def createLecturerFrame(userType,prevFrame):
     welcomeLecturerFrame = Frame(loginScrren)
     currentFrame = welcomeLecturerFrame
     welcomeLecturerFrame.pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
     labelUserID = Label(welcomeLecturerFrame, bg="blue", fg="White",
                          text="HI " + userType).pack()
     spaceLabel = Label(welcomeLecturerFrame, text="").pack()
-    # texbox = Text(welcomeLecturerFrame, height=2, width=11).pack()
-    #  spaceLabel = Label(text="").pack()
-    createButton = Button(welcomeLecturerFrame, height=1, width=20,
-                          text="Create Test").pack()
-    # spaceLabel = Label(text="").pack()
     viewButton = Button(welcomeLecturerFrame, height=1, width=20,
                           text="View test results",
                           command=lambda: CreateViewFrame(currentFrame)).pack()
-    # spaceLabel = Label(text="").pack()
-    requestButton = Button(welcomeLecturerFrame, height=1, width=20,
-                           text="Send request for report").pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
+
     signOutButton = Button(welcomeLecturerFrame, height=1, width=10,
                            text="Sign-out",
                            command=lambda: createLoginFrame(prevFrame,currentFrame)).pack()
