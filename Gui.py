@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import messagebox
 import mongoDB as db
 import Main as graph
+from PIL import  Image,ImageTk
 
 
 def createLoginFrame(prevFrame,currentFrame):
@@ -34,7 +35,7 @@ def GetUserID(textBox,loginFrame):
     db = client['setstudy'].get_collection('users').find({'username': username})
 
     if db.count() == 0:
-        print('Your username dose not exist')
+        messagebox.showinfo("ERROR",'Username do not exist')
         return 0
 
     for document in db:
@@ -54,7 +55,7 @@ def GetUserID(textBox,loginFrame):
         userType="Student"
         print("the user type is: "+userType)
         WelcomePage(userType,prevFrame)
-def getSelectedGraph(graphSelection,username,userRound,dominateFlag,analysisFlag):
+def getSelectedGraph(graphSelection,clusterSelection,usersToCluster,username,userRound,dominateFlag,analysisFlag):
     if(graphSelection=="Heat map"):
         graph.HeatMapFunction(username, userRound, dominateFlag, analysisFlag)
     if (graphSelection == "Eye movment speed"):
@@ -63,46 +64,79 @@ def getSelectedGraph(graphSelection,username,userRound,dominateFlag,analysisFlag
     if (graphSelection == "Point drawing"):
         graph.PointDrawing(username, userRound, dominateFlag)
         #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
+        #Speed var","Speed of eye movement","Speed var with speed of eye movement
+    if(clusterSelection=="Speed var"):
+        graph.ClusterDataBySpeedVar(usersToCluster)
+    if (clusterSelection == "Speed of eye movement"):
+        graph.ClusterDataBySpeedFastMovments(usersToCluster)
+        #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
+    if (clusterSelection == "Speed var with speed of eye movement"):
+        graph.ClusterDataBySpeedAndFastMovmentAVG(usersToCluster)
+
+        #graph.HeatMapFunction(username, userRound, dominateFlag,analysisFlag)
 
     #if (graphSelection == "Eye movment speed"):
     #if (graphSelection == "Point drawing"):
-def CheckLecturerSelection(graphSelection,roundSelection,username,domFlag,analysisFlag):
+def CheckLecturerSelection(graphSelection,roundSelection,clusterSelection,usersToCluster,username,domFlag,analysisFlag):
     if graphSelection =="":
         messagebox.showinfo("ERROR", "Please select graph type")
     if roundSelection =="":
         messagebox.showinfo("ERROR", "Please select round to present")
-    if(graphSelection!="" and roundSelection!=""):
-        getSelectedGraph(graphSelection, username,roundSelection, domFlag,analysisFlag)
-def GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton):
+    if clusterSelection=="":
+        messagebox.showinfo("ERROR", "Please select cluster attributes")
+    if(graphSelection!="" and roundSelection!="" and clusterSelection!=""):
+        getSelectedGraph(graphSelection, clusterSelection, usersToCluster, username,roundSelection, domFlag, analysisFlag)
+def GetViewDetailsByRequestedID(texbox, prevFrame, getIDButton):
+    forgetFrame = prevFrame
+    forgetFrame.forget()
+    currentFrame = Frame(loginScrren)  ################### we can use loginframe=prevframe#########
+    currentFrame.pack()
+    spaceLabel = Label(currentFrame, text="").pack()
+
+    instructionLabel = Label(currentFrame,text="Select values to present",font='Arial 14 bold')
+    instructionLabel.pack()
+    spaceLabel = Label(currentFrame, text="").pack()
+    #(currentFrame, text="").pack()
     username = texbox.get("1.0", "end-1c")
+    usersToCluster = ['user1', 'user2', 'user4', 'user5', 'user7', 'user8']
     print("the reqursted id is: " + username)
     #getIDButton.pack_forget()
     numberOfRounds = db.GetNumberOfRoundByUsername(username)
     numberOfRoundArray = []
     for i in range(numberOfRounds):
         numberOfRoundArray.append(i+1)
-    #spaceLabel = Label(currentFrame, text="").pack()
+
     roundsLabel = Label(currentFrame, text=username+" rounds").pack()
-    var =IntVar()
-    var2=IntVar()
+    var = IntVar()
+    var2 = IntVar()
     roundsComboBox = Combobox(currentFrame, values = numberOfRoundArray)
     roundsComboBox.pack()
    # spaceLabel = Label(currentFrame, text="").pack()
     graphSelectionLabel = Label(currentFrame, text="Choose your graph type").pack()
     graphSelectionComboBox = Combobox(currentFrame,
-                                      values = ["Heat map","Eye movment speed","Point drawing"])
+                                      values=["Heat map", "Eye movment speed", "Point drawing"])
     graphSelectionComboBox.pack()
+    #spaceLabel = Label(currentFrame, text="").pack()
+    clusterSelectionLabel = Label(currentFrame, text="Choose clustering attributes").pack()
+    clusterSelectionComboBox = Combobox(currentFrame,
+                                      values=["Speed var","Speed of eye movement","Speed var with speed of eye movement"])
+    clusterSelectionComboBox.pack()
     spaceLabel = Label(currentFrame, text="").pack()
-    checkBoxButton=Checkbutton(currentFrame,text="Show only dominate cards",variable=var)
+    checkBoxButton=Checkbutton(currentFrame,text="Show dominate cards",variable=var)
     checkBoxButton.pack()
     checkBoxButton2=Checkbutton(currentFrame,text="Show analysis ",variable=var2)
-    checkBoxButton2.pack()
-   #spaceLabel = Label(currentFrame, text="").pack()
+    #checkBoxButton2.pack()
+    spaceLabel = Label(currentFrame, text="").pack()
     next=Button(currentFrame,text="Get graph",
                 command=lambda: CheckLecturerSelection(
-                graphSelectionComboBox.get(),roundsComboBox.get(),
+                graphSelectionComboBox.get(),(int(roundsComboBox.get())-1),clusterSelectionComboBox.get(),usersToCluster,
                 username,var.get(),var2.get()))
     next.pack()
+    spaceLabel = Label(currentFrame, text="").pack()
+
+    prevButton = Button(currentFrame, text="    Back    ",
+                  command=lambda: CreateViewFrame(currentFrame))
+    prevButton.pack()
 def createAdminsFrame(userType,prevFrame):
     welcomeAdminFrame = Frame(loginScrren)
     currentFrame = welcomeAdminFrame
@@ -116,36 +150,34 @@ def createAdminsFrame(userType,prevFrame):
 def CreateViewFrame(prevFrame):
     forgetFrame=prevFrame
     forgetFrame.forget()
-    viewFrame=Frame(loginScrren).pack()
+    viewFrame=Frame(loginScrren)
+    viewFrame.pack()
     currentFrame=viewFrame
-    labelUserID = Label(viewFrame, bg="green", fg="White", text="HI ").pack()
+    spaceLabelgert = Label(viewFrame, text="").pack()
+    spaceLabelgert = Label(viewFrame, text="").pack()
+    labelUserID = Label(viewFrame, fg="black", text="Enter candidates name",font='bold').pack()
     spaceLabelgert = Label(viewFrame, text="").pack()
     texbox = Text(viewFrame, height=2, width=11)
     texbox.pack()
-    spaceLabel = Label(text="").pack()
-    getIDButton = Button(viewFrame, height=1, width=10, text="GET DETAIELS",
-                         command=lambda: GetViewDetailsByRequestedID(texbox,currentFrame,getIDButton))
+    spaceLabelgert = Label(viewFrame, text="").pack()
+    getIDButton = Button(viewFrame, height=1, width=10, text="Get details",
+                 command=lambda: GetViewDetailsByRequestedID(texbox,viewFrame,getIDButton))
     getIDButton.pack()
-    spaceLabel = Label(text="").pack()
-    #signOutButton = Button(viewFrame, height=1, width=10, text="Sign-out",).pack()
+
 def createLecturerFrame(userType,prevFrame):
     welcomeLecturerFrame = Frame(loginScrren)
     currentFrame = welcomeLecturerFrame
     welcomeLecturerFrame.pack()
-    labelUserID = Label(welcomeLecturerFrame, bg="blue", fg="White",
-                         text="HI " + userType).pack()
     spaceLabel = Label(welcomeLecturerFrame, text="").pack()
-    # texbox = Text(welcomeLecturerFrame, height=2, width=11).pack()
-    #  spaceLabel = Label(text="").pack()
-    createButton = Button(welcomeLecturerFrame, height=1, width=20,
-                          text="Create Test").pack()
-    # spaceLabel = Label(text="").pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
+    labelUserID = Label(welcomeLecturerFrame,text="Welcome " + userType,font='bold').pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
     viewButton = Button(welcomeLecturerFrame, height=1, width=20,
                           text="View test results",
                           command=lambda: CreateViewFrame(currentFrame)).pack()
-    # spaceLabel = Label(text="").pack()
-    requestButton = Button(welcomeLecturerFrame, height=1, width=20,
-                           text="Send request for report").pack()
+    spaceLabel = Label(welcomeLecturerFrame, text="").pack()
+
     signOutButton = Button(welcomeLecturerFrame, height=1, width=10,
                            text="Sign-out",
                            command=lambda: createLoginFrame(prevFrame,currentFrame)).pack()
@@ -176,7 +208,7 @@ def StartPage():
     global loginScrren
     loginScrren=Tk()
     loginScrren.geometry("300x350")
-    loginScrren.title("Login page")
+    loginScrren.title("Set game analyzer")
     signOutFram=Frame(loginScrren)
     signOutFram.pack(side=BOTTOM)
     loginFrame=Frame(loginScrren)
@@ -184,7 +216,7 @@ def StartPage():
     spaceLabel = Label(loginFrame, text="").pack()
     spaceLabel = Label(loginFrame, text="").pack()
     spaceLabel = Label(loginFrame, text="").pack()
-    labelUserID=Label(loginFrame, text="Enter user ID").pack()
+    labelUserID=Label(loginFrame, text="Enter user ID",font='bold').pack()
     spaceLabel=Label(loginFrame, text="").pack()
     textBox=Text(loginFrame, height=2, width=11)
     textBox.pack()
